@@ -76,8 +76,6 @@ See [backend/README.md](backend/README.md) for setup and running instructions.
 
 ## Submission
 
-Email to: quang.truongdinh@nashtechglobal.com
-
 **Subject:** `[Mobile][React Native Assignment] {Your Name} – {Your SD}`
 
 **Body:**
@@ -87,7 +85,7 @@ Email to: quang.truongdinh@nashtechglobal.com
 
 ​
 Subsmit assignemnt
-Email to quang.truongdinh@nashtechglobal.com​
+Email to trainer
 
 Email template:​
 
