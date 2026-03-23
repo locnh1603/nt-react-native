@@ -1,11 +1,8 @@
-import { FC } from "react"
-import { Button, Image, StyleSheet, Text, View } from "react-native";
+import {FC} from 'react';
+import {Button, Image, StyleSheet, Text, View} from 'react-native';
+import type {DemoScreenProps} from '../types/navigation';
 
-interface IDemoScreen {
-    navigation: any;
-}
-
-export const DemoScreen: FC<IDemoScreen> = ({ navigation }) => {
+export const DemoScreen: FC<DemoScreenProps> = ({navigation}) => {
     return (
         <View style={styles.container}>
             <Image source={{ uri: 'https://reactjs.org/logo-og.png' }}
