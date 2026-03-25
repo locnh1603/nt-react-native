@@ -1,60 +1,57 @@
-// src/navigation/MainNavigator.tsx
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {HomeScreen} from '../home-screen';
 import {ProfileScreen} from '../profile-screen';
-import {DemoScreen} from '../demo-screen';
+import {OrdersScreen} from '../orders-screen';
 import {Image, StyleSheet} from 'react-native';
-import {useAuth} from '../../contexts/auth-context';
-import {SignInScreen} from '../signin-screen';
 import type {MainNavigatorProps, MainTabParamList} from '../../types/navigation';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainNavigator: React.FC<MainNavigatorProps> = () => {
-  const {user} = useAuth();
   return (
     <Tab.Navigator
       screenOptions={{
         headerShown: false,
+        tabBarActiveTintColor: '#0DF2F2',
       }}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
         options={{
           tabBarLabel: 'Home',
-          tabBarIcon: ({color, size}) => (
+          tabBarIcon: ({focused}) => (
             <Image
               source={require('../../assets/images/home.png')}
-              style={styles.icon}
+              style={focused ? styles.iconActive : styles.iconInactive}
             />
           ),
         }}
       />
 
       <Tab.Screen
-        name="Demo"
-        component={DemoScreen}
+        name="Orders"
+        component={OrdersScreen}
         options={{
-          tabBarLabel: 'List',
-          tabBarIcon: ({color, size}) => (
+          tabBarLabel: 'Orders',
+          tabBarIcon: ({focused}) => (
             <Image
               source={require('../../assets/images/list.png')}
-              style={styles.icon}
+              style={focused ? styles.iconActive : styles.iconInactive}
             />
           ),
         }}
       />
 
       <Tab.Screen
-        name="Account"
-        component={user ? ProfileScreen : SignInScreen}
+        name="Profile"
+        component={ProfileScreen}
         options={{
-          tabBarLabel: user ? 'Profile' : 'Sign In',
-          tabBarIcon: () => (
+          tabBarLabel: 'Profile',
+          tabBarIcon: ({focused}) => (
             <Image
               source={require('../../assets/images/person.png')}
-              style={styles.icon}
+              style={focused ? styles.iconActive : styles.iconInactive}
             />
           ),
         }}
@@ -64,9 +61,15 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
 };
 
 const styles = StyleSheet.create({
-  icon: {
+  iconActive: {
     width: 24,
     height: 24,
+    tintColor: '#0DF2F2',
+  },
+  iconInactive: {
+    width: 24,
+    height: 24,
+    tintColor: '#8E8E93',
   },
 });
 

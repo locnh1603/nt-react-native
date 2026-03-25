@@ -1,8 +1,12 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import apiReducer from '../slices/api-slice';
+import authReducer from '../slices/auth-slice';
+import productReducer from '../slices/product-slice';
+import profileReducer from '../slices/profile-slice';
 
 const rootReducer = combineReducers({
-    api: apiReducer,
+  auth: authReducer,
+  products: productReducer,
+  profile: profileReducer,
 });
 
 export default rootReducer;

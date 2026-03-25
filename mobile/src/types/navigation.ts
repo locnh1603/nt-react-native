@@ -3,12 +3,14 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 
 export type RootStackParamList = {
 	Main: undefined;
+	ProductDetail: undefined;
+  SignIn: undefined;
 };
 
 export type MainTabParamList = {
 	Home: undefined;
-	Demo: undefined;
-	Account: undefined;
+	Orders: undefined;
+	Profile: undefined;
 };
 
 export type MainNavigatorProps = NativeStackScreenProps<
@@ -18,9 +20,19 @@ export type MainNavigatorProps = NativeStackScreenProps<
 
 export type HomeScreenProps = BottomTabScreenProps<MainTabParamList, 'Home'>;
 
-export type DemoScreenProps = BottomTabScreenProps<MainTabParamList, 'Demo'>;
+export type OrdersScreenProps = BottomTabScreenProps<MainTabParamList, 'Orders'>;
 
-export type AccountScreenProps = BottomTabScreenProps<
+export type ProfileScreenProps = BottomTabScreenProps<
 	MainTabParamList,
-	'Account'
+	'Profile'
+>;
+
+export type SignInScreenProps = NativeStackScreenProps<
+	RootStackParamList,
+	'SignIn'
+>;
+
+export type ProductDetailScreenProps = NativeStackScreenProps<
+	RootStackParamList,
+	'ProductDetail'
 >;

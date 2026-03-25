@@ -5,12 +5,12 @@ interface ListItemProps {
   item: {
     title: string;
     body: string;
-    imageUrl: string; // Adjust the property name based on your data structure
+    imageUrl: string;
   };
 }
 
 const ListItem: React.FC<ListItemProps> = ({ item }) => {
-    const placeholderImage = require('../assets/images/logo.png'); // Replace with your placeholder image
+    const placeholderImage = require('../assets/images/logo.png');
 
   return (
     <View style={styles.listItem}>
@@ -36,9 +36,9 @@ const styles = StyleSheet.create({
     padding: 10,
   },
   image: {
-    width: 50, // Adjust the width as needed
-    height: 50, // Adjust the height as needed
-    borderRadius: 25, // Assuming you want a circular image
+    width: 50,
+    height: 50,
+    borderRadius: 25,
     marginRight: 10,
   },
   textContainer: {
