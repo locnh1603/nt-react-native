@@ -31,7 +31,7 @@ const styles = StyleSheet.create<IBackgroundStyles>({
         flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        backgroundColor: '#FFFFFF',
     },
     text: {
         fontSize: 18,

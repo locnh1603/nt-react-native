@@ -8,10 +8,10 @@ import {
 } from '../models/auth';
 import { UserProfile, UserProfileResponse } from '../models/user';
 import { ProductListResponse, ProductResponse } from '../models/product';
+import { getUserSession } from '../slices/auth-slice';
 
 class ApiService {
   private client: AxiosInstance;
-  private token: string | null = null;
 
   constructor() {
     this.client = axios.create({
@@ -23,9 +23,10 @@ class ApiService {
     });
 
     this.client.interceptors.request.use(
-      (config) => {
-        if (this.token) {
-          config.headers.Authorization = `Bearer ${this.token}`;
+      async (config) => {
+        const session = await getUserSession();
+        if (session) {
+          config.headers.Authorization = `Bearer ${session.token}`;
         }
         return config;
       },
@@ -37,24 +38,9 @@ class ApiService {
     this.client.interceptors.response.use(
       (response) => response,
       (error: AxiosError<ApiErrorResponse>) => {
-        if (error.response?.status === 401) {
-          this.clearToken();
-        }
         return Promise.reject(this.handleError(error));
       }
     );
-  }
-
-  public setToken(token: string): void {
-    this.token = token;
-  }
-
-  public clearToken(): void {
-    this.token = null;
-  }
-
-  public getToken(): string | null {
-    return this.token;
   }
 
   private handleError(error: AxiosError<ApiErrorResponse>): Error {
@@ -79,10 +65,6 @@ class ApiService {
         credentials
       );
 
-      if (response.data.data.token) {
-        this.setToken(response.data.data.token);
-      }
-
       return response.data;
     } catch (error) {
       throw this.handleError(error as AxiosError<ApiErrorResponse>);
@@ -96,10 +78,6 @@ class ApiService {
         userData
       );
 
-      if (response.data.data.token) {
-        this.setToken(response.data.data.token);
-      }
-
       return response.data;
     } catch (error) {
       throw this.handleError(error as AxiosError<ApiErrorResponse>);
@@ -109,9 +87,7 @@ class ApiService {
   public async logout(): Promise<void> {
     try {
       await this.client.post('/logout');
-      this.clearToken();
     } catch (error) {
-      this.clearToken();
       throw this.handleError(error as AxiosError<ApiErrorResponse>);
     }
   }

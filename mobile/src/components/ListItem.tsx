@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { FC } from 'react';
 import { View, Text, Image, StyleSheet } from 'react-native';
 
 interface ListItemProps {
@@ -9,7 +9,7 @@ interface ListItemProps {
   };
 }
 
-const ListItem: React.FC<ListItemProps> = ({ item }) => {
+const ListItem: FC<ListItemProps> = ({ item }) => {
     const placeholderImage = require('../assets/images/logo.png');
 
   return (

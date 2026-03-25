@@ -1,8 +1,8 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
-import { apiService } from '../services/api-service';
-import { LoginRequest, SignupRequest, AuthResponse } from '../models/auth';
-import { UserProfile } from '../models/user';
-import { AppThunk } from '../thunks/app-thunk';
+import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
+import {apiService} from '../services/api-service';
+import {LoginRequest, SignupRequest, AuthResponse} from '../models/auth';
+import {UserProfile} from '../models/user';
+import EncryptedStorage from 'react-native-encrypted-storage';
 
 interface AuthState {
   user: UserProfile | null;
@@ -20,55 +20,96 @@ const initialState: AuthState = {
   error: null,
 };
 
+export const storeUserSession = async (token: string, user: UserProfile) => {
+  try {
+    await EncryptedStorage.setItem(
+      'user_session',
+      JSON.stringify({
+        token: token,
+        userId: user.id,
+      }),
+    );
+  } catch (error) {}
+};
+
+export const clearUserSession = async () => {
+  try {
+    await EncryptedStorage.removeItem('user_session');
+  } catch (error) {}
+};
+
+export const getUserSession = async (): Promise<{
+  token: string;
+  userId: number;
+} | null> => {
+  try {
+    const session = await EncryptedStorage.getItem('user_session');
+    if (session) {
+      return JSON.parse(session);
+    }
+    return null;
+  } catch (error) {
+    return null;
+  }
+};
+
 export const loginUser = createAsyncThunk<
   AuthResponse,
   LoginRequest,
-  { rejectValue: string }
->('auth/login', async (credentials, { rejectWithValue }) => {
+  {rejectValue: string}
+>('auth/login', async (credentials, {rejectWithValue}) => {
   try {
     const response = await apiService.login(credentials);
+    const {token, user} = response.data;
+    await storeUserSession(token, user);
     return response;
   } catch (error) {
-    return rejectWithValue(error instanceof Error ? error.message : 'Login failed');
+    return rejectWithValue(
+      error instanceof Error ? error.message : 'Login failed',
+    );
   }
 });
 
 export const signupUser = createAsyncThunk<
   AuthResponse,
   SignupRequest,
-  { rejectValue: string }
->('auth/signup', async (userData, { rejectWithValue }) => {
+  {rejectValue: string}
+>('auth/signup', async (userData, {rejectWithValue}) => {
   try {
     const response = await apiService.signup(userData);
     return response;
   } catch (error) {
-    return rejectWithValue(error instanceof Error ? error.message : 'Signup failed');
+    return rejectWithValue(
+      error instanceof Error ? error.message : 'Signup failed',
+    );
   }
 });
 
-export const logoutUser = createAsyncThunk<
-  void,
-  void,
-  { rejectValue: string }
->('auth/logout', async (_, { rejectWithValue }) => {
-  try {
-    await apiService.logout();
-  } catch (error) {
-    return rejectWithValue(error instanceof Error ? error.message : 'Logout failed');
-  }
-});
+export const logoutUser = createAsyncThunk<void, void, {rejectValue: string}>(
+  'auth/logout',
+  async (_, {rejectWithValue}) => {
+    try {
+      await apiService.logout();
+      await clearUserSession();
+    } catch (error) {
+      return rejectWithValue(
+        error instanceof Error ? error.message : 'Logout failed',
+      );
+    }
+  },
+);
 
 export const fetchUserProfile = createAsyncThunk<
   UserProfile,
   void,
-  { rejectValue: string }
->('auth/fetchProfile', async (_, { rejectWithValue }) => {
+  {rejectValue: string}
+>('auth/fetchProfile', async (_, {rejectWithValue}) => {
   try {
     const profile = await apiService.getUserProfile();
     return profile;
   } catch (error) {
     return rejectWithValue(
-      error instanceof Error ? error.message : 'Failed to fetch profile'
+      error instanceof Error ? error.message : 'Failed to fetch profile',
     );
   }
 });
@@ -77,24 +118,24 @@ export const authSlice = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    clearError: (state) => {
+    clearError: state => {
       state.error = null;
     },
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
-      apiService.setToken(action.payload);
+      storeUserSession(action.payload, state.user!);
     },
-    clearAuth: (state) => {
+    clearAuth: state => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      apiService.clearToken();
+      clearUserSession();
     },
   },
-  extraReducers: (builder) => {
+  extraReducers: builder => {
     builder
-      .addCase(loginUser.pending, (state) => {
+      .addCase(loginUser.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -112,7 +153,7 @@ export const authSlice = createSlice({
       });
 
     builder
-      .addCase(signupUser.pending, (state) => {
+      .addCase(signupUser.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -130,10 +171,10 @@ export const authSlice = createSlice({
       });
 
     builder
-      .addCase(logoutUser.pending, (state) => {
+      .addCase(logoutUser.pending, state => {
         state.loading = true;
       })
-      .addCase(logoutUser.fulfilled, (state) => {
+      .addCase(logoutUser.fulfilled, state => {
         state.loading = false;
         state.user = null;
         state.token = null;
@@ -149,7 +190,7 @@ export const authSlice = createSlice({
       });
 
     builder
-      .addCase(fetchUserProfile.pending, (state) => {
+      .addCase(fetchUserProfile.pending, state => {
         state.loading = true;
         state.error = null;
       })
@@ -165,14 +206,14 @@ export const authSlice = createSlice({
   },
 });
 
-export const { clearError, setToken, clearAuth } = authSlice.actions;
+export const {clearError, setToken, clearAuth} = authSlice.actions;
 
-export const selectAuthUser = (state: { auth: AuthState }) => state.auth.user;
-export const selectAuthToken = (state: { auth: AuthState }) => state.auth.token;
-export const selectIsAuthenticated = (state: { auth: AuthState }) =>
+export const selectAuthUser = (state: {auth: AuthState}) => state.auth.user;
+export const selectAuthToken = (state: {auth: AuthState}) => state.auth.token;
+export const selectIsAuthenticated = (state: {auth: AuthState}) =>
   state.auth.isAuthenticated;
-export const selectAuthLoading = (state: { auth: AuthState }) =>
+export const selectAuthLoading = (state: {auth: AuthState}) =>
   state.auth.loading;
-export const selectAuthError = (state: { auth: AuthState }) => state.auth.error;
+export const selectAuthError = (state: {auth: AuthState}) => state.auth.error;
 
 export default authSlice.reducer;

@@ -1,34 +1,89 @@
-import * as React from 'react';
-import {Text, View} from 'react-native';
-import Button from '../components/Button';
+import { fetchProducts, selectProducts } from '../slices/product-slice';
+import { useAppDispatch, useAppSelector } from '../stores/store';
 import type {HomeScreenProps} from '../types/navigation';
-import {selectAuthUser} from '../slices/auth-slice';
-import {useAppSelector} from '../stores/store';
+import {FC, useCallback, useEffect} from 'react';
+import {
+  ActivityIndicator,
+  FlatList,
+  ListRenderItem,
+  Text,
+  View,
+} from 'react-native';
+import Background from '../components/Background';
+import {ProductDisplay} from '../components/ProductDisplay';
+import type {Product} from '../models/product';
+import {
+  selectProductsError,
+  selectProductsLoading,
+} from '../slices/product-slice';
+import {styles} from './styles/home-screen-styles';
 
-const HomeScreen: React.FC<HomeScreenProps> = ({navigation}) => {
-    const user = useAppSelector(selectAuthUser);
+const HomeScreen: FC<HomeScreenProps> = ({navigation}) => {
+  const dispatch = useAppDispatch();
+  const products = useAppSelector(selectProducts);
+  const loading = useAppSelector(selectProductsLoading);
+  const error = useAppSelector(selectProductsError);
 
-    return (
-        <View style={{margin: 10, flex: 1, flexDirection: 'column'}}>
-            {user ? (
-                <>
-                    <Text style={{flex: 1}}>Welcome, {user.username}!</Text>
-                    <View>
-                        <Button onPress={() => navigation.navigate('Profile')}>
-                            <Text>View Profile</Text>
-                        </Button>
-                    </View>
-                </>
-            ) : (
-                <>
-                    <Text style={{flex: 1}}>Welcome Guest</Text>
-                    <Button title="Login" onPress={() => navigation.navigate('Profile')}>
-                        <Text>Log in</Text>
-                    </Button>
-                </>
-            )}
+  useEffect(() => {
+    dispatch(fetchProducts());
+  }, [dispatch]);
+
+  const keyExtractor = useCallback((item: Product): string => {
+    return String(item.id);
+  }, []);
+
+  const handleAddToCart = useCallback((_product: Product): void => {
+    // Basic template action, can be replaced with cart logic.
+  }, []);
+
+  const renderItem: ListRenderItem<Product> = useCallback(
+    ({item}) => {
+      return (
+        <View style={styles.productCell}>
+          <ProductDisplay product={item} onAddPress={handleAddToCart} />
         </View>
-    );
+      );
+    },
+    [handleAddToCart],
+  );
+
+  return (
+    <Background>
+      <View style={styles.page}>
+        <Text style={styles.title}>Home</Text>
+        <Text style={styles.subtitle}>Product list template</Text>
+
+        {loading ? (
+          <View style={styles.centerBlock}>
+            <ActivityIndicator size="large" color="#0DF2F2" />
+            <Text style={styles.statusText}>Loading products...</Text>
+          </View>
+        ) : null}
+
+        {!loading && error ? (
+          <View style={styles.centerBlock}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        ) : null}
+
+        {!loading && !error ? (
+          <FlatList
+            data={products}
+            keyExtractor={keyExtractor}
+            renderItem={renderItem}
+            numColumns={2}
+            columnWrapperStyle={styles.row}
+            contentContainerStyle={styles.listContent}
+            ListEmptyComponent={
+              <View style={styles.centerBlock}>
+                <Text style={styles.statusText}>No products available.</Text>
+              </View>
+            }
+          />
+        ) : null}
+      </View>
+    </Background>
+  );
 };
 
-export { HomeScreen };
+export {HomeScreen};

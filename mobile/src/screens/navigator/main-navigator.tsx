@@ -1,10 +1,10 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import {HomeScreen} from '../home-screen';
 import {ProfileScreen} from '../profile-screen';
 import {OrdersScreen} from '../orders-screen';
 import {Image, StyleSheet} from 'react-native';
 import type {MainNavigatorProps, MainTabParamList} from '../../types/navigation';
+import { HomeScreen } from '../home-screen';
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
