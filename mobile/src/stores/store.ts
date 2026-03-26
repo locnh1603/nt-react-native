@@ -11,7 +11,7 @@ const store = configureStore({
         immutableCheck: false,
         serializableCheck: false,
       }).concat(logger as Middleware),
-    devTools: process.env.NODE_ENV !== 'production',
+  devTools: __DEV__,
 });
 
 export type AppDispatch = typeof store.dispatch;

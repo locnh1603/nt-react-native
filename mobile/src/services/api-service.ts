@@ -1,5 +1,4 @@
 import axios, { AxiosInstance, AxiosError } from 'axios';
-import { API_BASE_URL } from '@env';
 import {
   LoginRequest,
   SignupRequest,
@@ -8,32 +7,31 @@ import {
 } from '../models/auth';
 import { UserProfile, UserProfileResponse } from '../models/user';
 import { ProductListResponse, ProductResponse } from '../models/product';
-import { getUserSession } from '../slices/auth-slice';
 
 class ApiService {
   private client: AxiosInstance;
 
   constructor() {
     this.client = axios.create({
-      baseURL: API_BASE_URL,
+      baseURL: 'http://10.0.2.2:3000', // Replace with your actual API base URL
       headers: {
         'Content-Type': 'application/json',
       },
       timeout: 10000,
     });
 
-    this.client.interceptors.request.use(
-      async (config) => {
-        const session = await getUserSession();
-        if (session) {
-          config.headers.Authorization = `Bearer ${session.token}`;
-        }
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
+    // this.client.interceptors.request.use(
+    //   async (config) => {
+    //     const session = await getUserSession();
+    //     if (session) {
+    //       config.headers.Authorization = `Bearer ${session.token}`;
+    //     }
+    //     return config;
+    //   },
+    //   (error) => {
+    //     return Promise.reject(error);
+    //   }
+    // );
 
     this.client.interceptors.response.use(
       (response) => response,

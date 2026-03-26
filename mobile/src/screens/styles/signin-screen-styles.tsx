@@ -58,7 +58,6 @@ export const styles = StyleSheet.create<ISignInStyles>({
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        paddingVertical: 24,
     },
     shell: {
         width: '100%',

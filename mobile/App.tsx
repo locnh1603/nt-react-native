@@ -6,6 +6,7 @@ import {Provider} from 'react-redux';
 import store, {useAppSelector} from './src/stores/store';
 import type {RootStackParamList} from './src/types/navigation';
 import {FC} from 'react';
+import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SignInScreen} from './src/screens/signin-screen';
 import {ProductDetailScreen} from './src/screens/product-detail-screen';
 import {selectIsAuthenticated} from './src/slices/auth-slice';
@@ -14,9 +15,11 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 const App = () => {
   return (
-    <Provider store={store}>
-      <AppContent />
-    </Provider>
+    <GestureHandlerRootView style={{flex: 1}}>
+      <Provider store={store}>
+        <AppContent />
+      </Provider>
+    </GestureHandlerRootView>
   );
 };
 

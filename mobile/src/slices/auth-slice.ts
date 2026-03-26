@@ -2,7 +2,6 @@ import {createSlice, createAsyncThunk, PayloadAction} from '@reduxjs/toolkit';
 import {apiService} from '../services/api-service';
 import {LoginRequest, SignupRequest, AuthResponse} from '../models/auth';
 import {UserProfile} from '../models/user';
-import EncryptedStorage from 'react-native-encrypted-storage';
 
 interface AuthState {
   user: UserProfile | null;
@@ -20,38 +19,38 @@ const initialState: AuthState = {
   error: null,
 };
 
-export const storeUserSession = async (token: string, user: UserProfile) => {
-  try {
-    await EncryptedStorage.setItem(
-      'user_session',
-      JSON.stringify({
-        token: token,
-        userId: user.id,
-      }),
-    );
-  } catch (error) {}
-};
+// export const storeUserSession = async (token: string, user: UserProfile) => {
+//   try {
+//     await EncryptedStorage.setItem(
+//       'user_session',
+//       JSON.stringify({
+//         token: token,
+//         userId: user.id,
+//       }),
+//     );
+//   } catch (error) {}
+// };
 
-export const clearUserSession = async () => {
-  try {
-    await EncryptedStorage.removeItem('user_session');
-  } catch (error) {}
-};
+// export const clearUserSession = async () => {
+//   try {
+//     await EncryptedStorage.removeItem('user_session');
+//   } catch (error) {}
+// };
 
-export const getUserSession = async (): Promise<{
-  token: string;
-  userId: number;
-} | null> => {
-  try {
-    const session = await EncryptedStorage.getItem('user_session');
-    if (session) {
-      return JSON.parse(session);
-    }
-    return null;
-  } catch (error) {
-    return null;
-  }
-};
+// export const getUserSession = async (): Promise<{
+//   token: string;
+//   userId: number;
+// } | null> => {
+//   try {
+//     const session = await EncryptedStorage.getItem('user_session');
+//     if (session) {
+//       return JSON.parse(session);
+//     }
+//     return null;
+//   } catch (error) {
+//     return null;
+//   }
+// };
 
 export const loginUser = createAsyncThunk<
   AuthResponse,
@@ -61,7 +60,7 @@ export const loginUser = createAsyncThunk<
   try {
     const response = await apiService.login(credentials);
     const {token, user} = response.data;
-    await storeUserSession(token, user);
+    // await storeUserSession(token, user);
     return response;
   } catch (error) {
     return rejectWithValue(
@@ -90,7 +89,7 @@ export const logoutUser = createAsyncThunk<void, void, {rejectValue: string}>(
   async (_, {rejectWithValue}) => {
     try {
       await apiService.logout();
-      await clearUserSession();
+      // await clearUserSession();
     } catch (error) {
       return rejectWithValue(
         error instanceof Error ? error.message : 'Logout failed',
@@ -124,13 +123,13 @@ export const authSlice = createSlice({
     setToken: (state, action: PayloadAction<string>) => {
       state.token = action.payload;
       state.isAuthenticated = true;
-      storeUserSession(action.payload, state.user!);
+      // storeUserSession(action.payload, state.user!);
     },
     clearAuth: state => {
       state.user = null;
       state.token = null;
       state.isAuthenticated = false;
-      clearUserSession();
+      // clearUserSession();
     },
   },
   extraReducers: builder => {
