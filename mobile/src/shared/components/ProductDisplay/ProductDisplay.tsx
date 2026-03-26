@@ -1,0 +1,54 @@
+import React, {FC, useMemo} from 'react';
+import {Image, ImageSourcePropType, Pressable, Text, View} from 'react-native';
+import ImageAssets from '../../../assets/images';
+import type {Product} from '../../../models/product';
+import {styles} from './ProductDisplay.styles';
+
+interface ProductDisplayProps {
+  product: Product;
+  onAddPress?: (product: Product) => void;
+}
+
+export const ProductDisplay: FC<ProductDisplayProps> = ({
+  product,
+  onAddPress,
+}) => {
+  const imageSource: ImageSourcePropType = useMemo(() => {
+    if (product.imageUrl) {
+      return {uri: product.imageUrl};
+    }
+
+    return ImageAssets.logo;
+  }, [product.imageUrl]);
+
+  const handleAddPress = (): void => {
+    onAddPress?.(product);
+  };
+
+  return (
+    <View style={styles.card}>
+      <View style={styles.imageWrap}>
+        <Image source={imageSource} style={styles.image} resizeMode="cover" />
+        <View style={styles.favoriteButton}>
+          <Text style={styles.favoriteButtonText}>♡</Text>
+        </View>
+      </View>
+
+      <View style={styles.content}>
+        <Text style={styles.title} numberOfLines={1}>
+          {product.name}
+        </Text>
+        <Text style={styles.category}>{product.category}</Text>
+
+        <View style={styles.footer}>
+          <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+          <Pressable style={styles.addButton} onPress={handleAddPress}>
+            <Text style={styles.addButtonText}>+</Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
+  );
+};
+
+export default ProductDisplay;

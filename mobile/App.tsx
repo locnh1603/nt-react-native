@@ -1,15 +1,16 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import DemoUseContext from './src/screens/demo/demo-usecontext';
-import MainNavigator from './src/screens/navigator/main-navigator';
+import MainNavigator from './src/navigation/MainNavigator';
 import {Provider} from 'react-redux';
-import store, {useAppSelector} from './src/stores/store';
+import store from './src/app/store';
+import {useAppDispatch, useAppSelector} from './src/app/hooks';
 import type {RootStackParamList} from './src/types/navigation';
-import {FC} from 'react';
+import {FC, useEffect, useState} from 'react';
+import {ActivityIndicator, View} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
-import {SignInScreen} from './src/screens/signin-screen';
-import {ProductDetailScreen} from './src/screens/product-detail-screen';
-import {selectIsAuthenticated} from './src/slices/auth-slice';
+import {SignInScreen} from './src/features/auth';
+import {ProductDetailScreen} from './src/features/products';
+import {restoreUserSession, selectIsAuthenticated} from './src/features/auth';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -24,7 +25,34 @@ const App = () => {
 };
 
 const AppContent: FC = () => {
+  const dispatch = useAppDispatch();
   const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const [isSessionReady, setIsSessionReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const bootstrapSession = async (): Promise<void> => {
+      await dispatch(restoreUserSession());
+      if (isMounted) {
+        setIsSessionReady(true);
+      }
+    };
+
+    bootstrapSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [dispatch]);
+
+  if (!isSessionReady) {
+    return (
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
+        <ActivityIndicator size="large" color="#20D9DE" />
+      </View>
+    );
+  }
 
   return (
     <NavigationContainer>

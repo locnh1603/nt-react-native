@@ -1,12 +1,13 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, {AxiosInstance, AxiosError} from 'axios';
 import {
   LoginRequest,
   SignupRequest,
   AuthResponse,
   ApiErrorResponse,
 } from '../models/auth';
-import { UserProfile, UserProfileResponse } from '../models/user';
-import { ProductListResponse, ProductResponse } from '../models/product';
+import {UserProfile, UserProfileResponse} from '../models/user';
+import {ProductListResponse, ProductResponse} from '../models/product';
+import {getUserSession, refreshUserSessionExpiry} from './user-session';
 
 class ApiService {
   private client: AxiosInstance;
@@ -20,24 +21,26 @@ class ApiService {
       timeout: 10000,
     });
 
-    // this.client.interceptors.request.use(
-    //   async (config) => {
-    //     const session = await getUserSession();
-    //     if (session) {
-    //       config.headers.Authorization = `Bearer ${session.token}`;
-    //     }
-    //     return config;
-    //   },
-    //   (error) => {
-    //     return Promise.reject(error);
-    //   }
-    // );
+    this.client.interceptors.request.use(
+      async config => {
+        const session = await getUserSession();
+        if (session?.token) {
+          config.headers = config.headers ?? {};
+          config.headers.Authorization = `Bearer ${session.token}`;
+          await refreshUserSessionExpiry();
+        }
+        return config;
+      },
+      error => {
+        return Promise.reject(error);
+      },
+    );
 
     this.client.interceptors.response.use(
-      (response) => response,
+      response => response,
       (error: AxiosError<ApiErrorResponse>) => {
         return Promise.reject(this.handleError(error));
-      }
+      },
     );
   }
 
@@ -60,7 +63,7 @@ class ApiService {
     try {
       const response = await this.client.post<AuthResponse>(
         '/login',
-        credentials
+        credentials,
       );
 
       return response.data;
@@ -73,7 +76,7 @@ class ApiService {
     try {
       const response = await this.client.post<AuthResponse>(
         '/signup',
-        userData
+        userData,
       );
 
       return response.data;
@@ -118,10 +121,12 @@ class ApiService {
     }
   }
 
-  public async getProductById(productId: number): Promise<ProductResponse['data']> {
+  public async getProductById(
+    productId: number,
+  ): Promise<ProductResponse['data']> {
     try {
       const response = await this.client.get<ProductResponse>(
-        `/product/${productId}`
+        `/product/${productId}`,
       );
 
       if (!response.data.status) {
