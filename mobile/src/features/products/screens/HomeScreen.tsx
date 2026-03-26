@@ -1,11 +1,11 @@
 import {fetchProducts, selectProducts, selectProductsError, selectProductsLoading} from '../productsSlice';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
-import type {HomeScreenProps} from '../../../types/navigation';
+import type {HomeScreenProps, RootStackParamList} from '../../../types/navigation';
 import {FC, useCallback, useEffect, useMemo, useState} from 'react';
+import {useNavigation} from '@react-navigation/native';
+import type {NativeStackNavigationProp} from '@react-navigation/native-stack';
 import {
   ActivityIndicator,
-  FlatList,
-  ListRenderItem,
   Pressable,
   ScrollView,
   Text,
@@ -19,48 +19,37 @@ import type {Product} from '../../../models/product';
 import {ProductCard} from '../components/ProductCard';
 import {styles} from './HomeScreen.styles';
 
-const ALL_ITEMS_FILTER = 'All Items';
 
 const HomeScreen: FC<HomeScreenProps> = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
   const products = useAppSelector(selectProducts);
   const loading = useAppSelector(selectProductsLoading);
   const error = useAppSelector(selectProductsError);
   const [searchText, setSearchText] = useState<string>('');
-  const [selectedCategory, setSelectedCategory] =
-    useState<string>(ALL_ITEMS_FILTER);
 
   useEffect(() => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const categories = useMemo((): string[] => {
-    const uniqueCategories = new Set(
-      products.map(product => product.category).filter(Boolean),
-    );
-
-    return [ALL_ITEMS_FILTER, ...Array.from(uniqueCategories)];
-  }, [products]);
-
   const filteredProducts = useMemo((): Product[] => {
     const normalizedSearch = searchText.trim().toLowerCase();
 
     return products.filter(product => {
-      const matchesCategory =
-        selectedCategory === ALL_ITEMS_FILTER ||
-        product.category === selectedCategory;
-      const matchesSearch =
+      return (
         normalizedSearch.length === 0 ||
-        product.name.toLowerCase().includes(normalizedSearch) ||
-          product.category.toLowerCase().includes(normalizedSearch);
-
-      return matchesCategory && matchesSearch;
+        product.name.toLowerCase().includes(normalizedSearch)
+      );
     });
-  }, [products, searchText, selectedCategory]);
+  }, [products, searchText]);
 
-  const keyExtractor = useCallback((item: Product): string => {
-    return String(item.id);
-  }, []);
+  const handleProductPress = useCallback(
+    (product: Product): void => {
+      navigation.navigate('ProductDetail', {productId: product.id});
+    },
+    [navigation],
+  );
 
   const handleAddToCart = useCallback((_product: Product): void => {
     // Basic template action, can be replaced with cart logic.
@@ -70,17 +59,6 @@ const HomeScreen: FC<HomeScreenProps> = () => {
     dispatch(fetchProducts());
   }, [dispatch]);
 
-  const renderItem: ListRenderItem<Product> = useCallback(
-    ({item}) => {
-      return (
-        <View style={styles.productCell}>
-          <ProductCard product={item} onAddPress={handleAddToCart} />
-        </View>
-      );
-    },
-    [handleAddToCart],
-  );
-
   return (
     <Background>
       <View style={styles.page}>
@@ -89,11 +67,11 @@ const HomeScreen: FC<HomeScreenProps> = () => {
 
           <View style={styles.headerActions}>
             <Pressable style={styles.iconButton}>
-              <FontAwesome name="bell" size={16} color="#111827" />
+              <FontAwesome name="bell" size={20} color="#111827" />
             </Pressable>
 
             <Pressable style={styles.iconButton}>
-              <FontAwesome name="shopping-cart" size={16} color="#111827" />
+              <FontAwesome name="shopping-cart" size={20} color="#111827" />
             </Pressable>
           </View>
         </View>
@@ -108,33 +86,6 @@ const HomeScreen: FC<HomeScreenProps> = () => {
             style={styles.searchInput}
           />
         </View>
-
-        <ScrollView
-          horizontal
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.filtersContent}>
-          {categories.map(category => {
-            const isSelected = category === selectedCategory;
-
-            return (
-              <Pressable
-                key={category}
-                style={[
-                  styles.filterChip,
-                  isSelected ? styles.filterChipActive : null,
-                ]}
-                onPress={() => setSelectedCategory(category)}>
-                <Text
-                  style={[
-                    styles.filterChipText,
-                    isSelected ? styles.filterChipTextActive : null,
-                  ]}>
-                  {category}
-                </Text>
-              </Pressable>
-            );
-          })}
-        </ScrollView>
 
         {loading ? (
           <View style={styles.centerBlock}>
@@ -154,19 +105,29 @@ const HomeScreen: FC<HomeScreenProps> = () => {
         ) : null}
 
         {!loading && !error ? (
-          <FlatList
-            data={filteredProducts}
-            keyExtractor={keyExtractor}
-            renderItem={renderItem}
-            numColumns={2}
-            columnWrapperStyle={styles.row}
+          <ScrollView
             contentContainerStyle={styles.listContent}
-            ListEmptyComponent={
+            showsVerticalScrollIndicator={false}>
+            {filteredProducts.length === 0 ? (
               <View style={styles.centerBlock}>
                 <Text style={styles.statusText}>No products found.</Text>
               </View>
-            }
-          />
+            ) : (
+              <View style={styles.productsGrid}>
+                {filteredProducts.map(item => {
+                  return (
+                    <View key={String(item.id)} style={styles.productCell}>
+                      <ProductCard
+                        product={item}
+                        onAddPress={handleAddToCart}
+                        onPress={handleProductPress}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            )}
+          </ScrollView>
         ) : null}
       </View>
     </Background>

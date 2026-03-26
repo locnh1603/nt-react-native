@@ -8,15 +8,10 @@ type HomeScreenStyles = {
   title: TextStyle;
   searchWrap: ViewStyle;
   searchInput: TextStyle;
-  filtersContent: ViewStyle;
-  filterChip: ViewStyle;
-  filterChipActive: ViewStyle;
-  filterChipText: TextStyle;
-  filterChipTextActive: TextStyle;
   centerBlock: ViewStyle;
   statusText: TextStyle;
   listContent: ViewStyle;
-  row: ViewStyle;
+  productsGrid: ViewStyle;
   productCell: ViewStyle;
 };
 
@@ -31,64 +26,41 @@ export const styles = StyleSheet.create<HomeScreenStyles>({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingVertical: 8,
   },
   headerActions: {
     flexDirection: 'row',
     alignItems: 'center',
-    columnGap: 8,
+    columnGap: 10,
   },
   iconButton: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
+    width: 42,
+    height: 42,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: '#F2F4F7',
   },
   title: {
-    fontSize: 36,
-    fontWeight: '700',
-    color: '#1F2937',
+    fontSize: 32,
+    fontWeight: '800',
+    color: '#111827',
   },
   searchWrap: {
     marginTop: 14,
     flexDirection: 'row',
     alignItems: 'center',
-    columnGap: 8,
+    columnGap: 10,
     backgroundColor: '#F2F4F7',
-    borderRadius: 14,
-    paddingHorizontal: 14,
-    justifyContent: 'center',
+    borderRadius: 28,
+    paddingHorizontal: 18,
+    height: 52,
   },
   searchInput: {
     flex: 1,
-    height: 44,
-    fontSize: 16,
+    height: 52,
+    fontSize: 15,
     color: '#111827',
-  },
-  filtersContent: {
-    marginTop: 14,
-    paddingBottom: 10,
-    columnGap: 10,
-  },
-  filterChip: {
-    paddingHorizontal: 20,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: '#F2F4F7',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  filterChipActive: {
-    backgroundColor: '#10E3E3',
-  },
-  filterChipText: {
-    fontSize: 21,
-    fontWeight: '500',
-    color: '#4B5563',
-  },
-  filterChipTextActive: {
-    color: '#0F172A',
   },
   centerBlock: {
     paddingVertical: 28,
@@ -101,15 +73,17 @@ export const styles = StyleSheet.create<HomeScreenStyles>({
     color: '#4B5563',
   },
   listContent: {
-    paddingTop: 6,
+    paddingTop: 28,
     paddingBottom: 28,
   },
-  row: {
-    justifyContent: 'space-between',
-    marginBottom: 16,
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -8,
   },
   productCell: {
-    flex: 1,
-    maxWidth: '48.5%',
+    width: '50%',
+    paddingHorizontal: 8,
+    marginBottom: 16,
   },
 });

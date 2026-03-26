@@ -14,12 +14,12 @@ export const ProductDisplay: FC<ProductDisplayProps> = ({
   onAddPress,
 }) => {
   const imageSource: ImageSourcePropType = useMemo(() => {
-    if (product.imageUrl) {
-      return {uri: product.imageUrl};
+    if (product.image) {
+      return {uri: product.image};
     }
 
     return ImageAssets.logo;
-  }, [product.imageUrl]);
+  }, [product.image]);
 
   const handleAddPress = (): void => {
     onAddPress?.(product);
@@ -38,7 +38,7 @@ export const ProductDisplay: FC<ProductDisplayProps> = ({
         <Text style={styles.title} numberOfLines={1}>
           {product.name}
         </Text>
-        <Text style={styles.category}>{product.category}</Text>
+        <Text style={styles.category}>{product.priceUnit ?? ''}</Text>
 
         <View style={styles.footer}>
           <Text style={styles.price}>${product.price.toFixed(2)}</Text>

@@ -7,19 +7,19 @@ const DEFAULT_SESSION_DURATION_MS = 60 * 60 * 1000;
 
 export interface UserSession {
   token: string;
-  user: UserProfile;
+  user: UserProfile | null;
   expiresAt: number;
 }
 
 interface StoreUserSessionInput {
   token: string;
-  user: UserProfile;
+  user?: UserProfile | null;
   sessionDurationMs?: number;
 }
 
 interface StoredUserSession {
   token: string;
-  user: UserProfile;
+  user: UserProfile | null;
   expiresAt: number;
 }
 
@@ -30,15 +30,14 @@ const parseStoredSession = (
     const parsedSession = JSON.parse(rawSession) as Partial<StoredUserSession>;
     if (
       typeof parsedSession.token !== 'string' ||
-      typeof parsedSession.expiresAt !== 'number' ||
-      !parsedSession.user
+      typeof parsedSession.expiresAt !== 'number'
     ) {
       return null;
     }
 
     return {
       token: parsedSession.token,
-      user: parsedSession.user,
+      user: parsedSession.user ?? null,
       expiresAt: parsedSession.expiresAt,
     };
   } catch {
@@ -70,7 +69,7 @@ export const storeUserSession = async ({
   const expiresAt = Date.now() + sessionDurationMs;
   const payload: StoredUserSession = {
     token,
-    user,
+    user: user ?? null,
     expiresAt,
   };
 

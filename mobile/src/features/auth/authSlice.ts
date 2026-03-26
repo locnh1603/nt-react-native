@@ -35,17 +35,17 @@ export const restoreUserSession = createAsyncThunk<
 });
 
 export const loginUser = createAsyncThunk<
-	AuthResponse,
+	{token: string; user: UserProfile},
 	LoginRequest,
 	{rejectValue: string}
 >('auth/login', async (credentials, {rejectWithValue}) => {
 	try {
 		const response = await apiService.login(credentials);
-		await storeUserSession({
-			token: response.data.token,
-			user: response.data.user,
-		});
-		return response;
+		const {token} = response.data;
+		await storeUserSession({token});
+		const user = await apiService.getUserProfile();
+		await updateUserSessionUser(user);
+		return {token, user};
 	} catch (error) {
 		return rejectWithValue(
 			error instanceof Error ? error.message : 'Login failed',
@@ -54,17 +54,17 @@ export const loginUser = createAsyncThunk<
 });
 
 export const signupUser = createAsyncThunk<
-	AuthResponse,
+	{token: string; user: UserProfile},
 	SignupRequest,
 	{rejectValue: string}
 >('auth/signup', async (userData, {rejectWithValue}) => {
 	try {
 		const response = await apiService.signup(userData);
-		await storeUserSession({
-			token: response.data.token,
-			user: response.data.user,
-		});
-		return response;
+		const {token} = response.data;
+		await storeUserSession({token});
+		const user = await apiService.getUserProfile();
+		await updateUserSessionUser(user);
+		return {token, user};
 	} catch (error) {
 		return rejectWithValue(
 			error instanceof Error ? error.message : 'Signup failed',
@@ -164,7 +164,7 @@ export const authSlice = createSlice({
 			})
 			.addCase(loginUser.fulfilled, (state, action) => {
 				state.loading = false;
-				state.user = action.payload.data.user;
+				state.user = action.payload.user;
 				state.token = null;
 				state.isAuthenticated = true;
 				state.error = null;
@@ -182,7 +182,7 @@ export const authSlice = createSlice({
 			})
 			.addCase(signupUser.fulfilled, (state, action) => {
 				state.loading = false;
-				state.user = action.payload.data.user;
+				state.user = action.payload.user;
 				state.token = null;
 				state.isAuthenticated = true;
 				state.error = null;

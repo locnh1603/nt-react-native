@@ -1,49 +1,117 @@
-import {StyleSheet, TextStyle, ViewStyle} from 'react-native';
+import {Dimensions, ImageStyle, StyleSheet, TextStyle, ViewStyle} from 'react-native';
+
+const IMAGE_HEIGHT = Dimensions.get('window').width * 0.85;
 
 type ProductDetailScreenStyles = {
-  page: ViewStyle;
-  card: ViewStyle;
-  title: TextStyle;
+  screen: ViewStyle;
+  centered: ViewStyle;
+  scroll: ViewStyle;
+  scrollContent: ViewStyle;
+  imageContainer: ViewStyle;
+  image: ImageStyle;
+  infoSection: ViewStyle;
+  productName: TextStyle;
+  priceRow: ViewStyle;
+  currentPrice: TextStyle;
+  oldPrice: TextStyle;
+  sectionTitle: TextStyle;
   description: TextStyle;
-  backButton: ViewStyle;
-  backButtonText: TextStyle;
+  ctaRow: ViewStyle;
+  addToCartButton: ViewStyle;
+  buyNowButton: ViewStyle;
+  addToCartText: TextStyle;
+  buyNowText: TextStyle;
 };
 
 export const styles = StyleSheet.create<ProductDetailScreenStyles>({
-  page: {
+  screen: {
     flex: 1,
-    width: '100%',
+    backgroundColor: '#FFFFFF',
+  },
+  centered: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  card: {
-    width: '100%',
-    maxWidth: 360,
     backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 16,
+  },
+  scroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 16,
+  },
+  imageContainer: {
+    height: IMAGE_HEIGHT,
+    backgroundColor: '#F3F4F6',
+    overflow: 'hidden',
+  },
+  image: {
+    width: '100%',
+    height: '100%',
+  },
+  infoSection: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
     gap: 12,
   },
-  title: {
-    fontSize: 20,
+  productName: {
+    fontSize: 22,
     fontWeight: '700',
     color: '#1F2937',
   },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  currentPrice: {
+    fontSize: 26,
+    fontWeight: '800',
+    color: '#1F2937',
+  },
+  oldPrice: {
+    fontSize: 16,
+    color: '#9CA3AF',
+    textDecorationLine: 'line-through',
+  },
+  sectionTitle: {
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#1F2937',
+    marginTop: 4,
+  },
   description: {
     fontSize: 14,
+    lineHeight: 22,
     color: '#6B7280',
   },
-  backButton: {
-    height: 44,
-    borderRadius: 10,
-    backgroundColor: '#0DF2F2',
-    justifyContent: 'center',
-    alignItems: 'center',
+  ctaRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    gap: 12,
+    backgroundColor: '#FFFFFF',
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
   },
-  backButtonText: {
+  addToCartButton: {
+    flex: 1,
+    marginVertical: 0,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#0DF2F2',
+  },
+  buyNowButton: {
+    flex: 1,
+    marginVertical: 0,
+    backgroundColor: '#0DF2F2',
+  },
+  addToCartText: {
+    fontSize: 14,
+    fontWeight: '700',
+    color: '#0DF2F2',
+  },
+  buyNowText: {
     fontSize: 14,
     fontWeight: '700',
     color: '#06131A',

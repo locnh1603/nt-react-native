@@ -15,39 +15,35 @@ import {styles} from './ProductCard.styles';
 interface ProductCardProps {
   product: Product;
   onAddPress?: (product: Product) => void;
+  onPress?: (product: Product) => void;
   style?: ViewStyle;
 }
 
 const ProductCardComponent: FC<ProductCardProps> = ({
   product,
   onAddPress,
+  onPress,
   style,
 }) => {
+  const handleCardPress = (): void => {
+    onPress?.(product);
+  };
   const imageSource: ImageSourcePropType = useMemo(() => {
-    if (product.imageUrl) {
-      return {uri: product.imageUrl};
+    if (product.image) {
+      return {uri: product.image};
     }
 
     return ImageAssets.logo;
-  }, [product.imageUrl]);
-
-  const showSaleBadge = product.stock >= 20 && product.price >= 40;
-  const oldPrice = showSaleBadge ? product.price * 1.2 : null;
+  }, [product.image]);
 
   const handleAddPress = (): void => {
     onAddPress?.(product);
   };
 
   return (
-    <View style={[styles.card, style]}>
+    <Pressable style={[styles.card, style]} onPress={handleCardPress}>
       <View style={styles.imageWrap}>
         <Image source={imageSource} style={styles.image} resizeMode="cover" />
-
-        {showSaleBadge ? (
-          <View style={styles.saleBadge}>
-            <Text style={styles.saleBadgeText}>SALE</Text>
-          </View>
-        ) : null}
 
         <View style={styles.favoriteButton}>
           <FontAwesome name="heart" size={14} color="#6B7280" />
@@ -59,15 +55,12 @@ const ProductCardComponent: FC<ProductCardProps> = ({
           {product.name}
         </Text>
         <Text style={styles.category} numberOfLines={1}>
-          {product.category}
+          {product.priceUnit ?? ''}
         </Text>
 
         <View style={styles.footer}>
           <View style={styles.priceBlock}>
             <Text style={styles.price}>${product.price.toFixed(2)}</Text>
-            {oldPrice ? (
-              <Text style={styles.oldPrice}>${oldPrice.toFixed(2)}</Text>
-            ) : null}
           </View>
 
           <Pressable style={styles.addButton} onPress={handleAddPress}>
@@ -75,7 +68,7 @@ const ProductCardComponent: FC<ProductCardProps> = ({
           </Pressable>
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 };
 

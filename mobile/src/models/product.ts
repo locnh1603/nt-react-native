@@ -1,13 +1,12 @@
+export type PriceUnit = 'dollar' | 'euro' | 'inr';
+
 export interface Product {
   id: number;
   name: string;
   description: string;
   price: number;
-  category: string;
-  stock: number;
-  imageUrl?: string;
-  createdAt: string;
-  updatedAt: string;
+  priceUnit?: PriceUnit;
+  image?: string;
 }
 
 export interface ProductListResponse {
@@ -26,4 +25,37 @@ export interface ProductErrorResponse {
     message?: string;
     [key: string]: any;
   };
+}
+
+export interface CreateProductRequest {
+  name: string;
+  description: string;
+  price: number;
+  image?: string;
+  priceUnit?: PriceUnit;
+}
+
+export type UpdateProductRequest = Partial<CreateProductRequest>;
+
+export interface Review {
+  id: number;
+  productId: number;
+  userId: number;
+  rating: number;
+  message: string;
+}
+
+export interface AddReviewRequest {
+  rating: number;
+  message: string;
+}
+
+export interface ReviewListResponse {
+  status: boolean;
+  data: Review[];
+}
+
+export interface ReviewResponse {
+  status: boolean;
+  data: Review;
 }

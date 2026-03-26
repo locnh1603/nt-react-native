@@ -13,22 +13,9 @@ export interface SignupRequest {
   role?: string;
 }
 
-export interface ApiUser {
-  id: number;
-  username: string;
-  email: string;
-  firstName: string;
-  lastName: string;
-  age: number;
-  role: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
 export interface AuthResponse {
   status: boolean;
   data: {
-    user: ApiUser;
     token: string;
   };
 }

@@ -5,8 +5,27 @@ import {
   AuthResponse,
   ApiErrorResponse,
 } from '../models/auth';
-import {UserProfile, UserProfileResponse} from '../models/user';
-import {ProductListResponse, ProductResponse} from '../models/product';
+import {UserProfile, UserProfileResponse, UpdateUserPayload, ChangeRolePayload, UserListResponse} from '../models/user';
+import {
+  ProductListResponse,
+  ProductResponse,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ReviewListResponse,
+  ReviewResponse,
+  AddReviewRequest,
+  Review,
+  Product,
+} from '../models/product';
+import {
+  Order,
+  CreateOrderPayload,
+  UpdateOrderStatusPayload,
+  OrderResponse,
+  OrderListResponse,
+  PaymentMethodsResponse,
+  PaymentMethod,
+} from '../models/order';
 import {getUserSession, refreshUserSessionExpiry} from './user-session';
 
 class ApiService {
@@ -95,7 +114,7 @@ class ApiService {
 
   public async getUserProfile(): Promise<UserProfile> {
     try {
-      const response = await this.client.get<UserProfileResponse>('/user');
+      const response = await this.client.get<UserProfileResponse>('/user/');
 
       if (!response.data.status) {
         throw new Error('Failed to fetch user profile');
@@ -107,9 +126,73 @@ class ApiService {
     }
   }
 
-  public async getProducts(): Promise<ProductListResponse['data']> {
+  public async updateUserProfile(data: UpdateUserPayload): Promise<UserProfile> {
     try {
-      const response = await this.client.get<ProductListResponse>('/product');
+      const response = await this.client.patch<UserProfileResponse>(
+        '/user/',
+        data,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to update user profile');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async getAllUsers(): Promise<UserProfile[]> {
+    try {
+      const response = await this.client.get<UserListResponse>('/user/all');
+
+      if (!response.data.status) {
+        throw new Error('Failed to fetch users');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async changeUserRole(
+    userId: number,
+    data: ChangeRolePayload,
+  ): Promise<UserProfile> {
+    try {
+      const response = await this.client.patch<UserProfileResponse>(
+        `/user/change-role/${userId}`,
+        data,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to change user role');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async deleteUser(userId: number): Promise<void> {
+    try {
+      await this.client.delete(`/user/${userId}`);
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async getProducts(
+    params?: {name?: string; priceUnit?: string},
+  ): Promise<ProductListResponse['data']> {
+    try {
+      const response = await this.client.get<ProductListResponse>(
+        '/product/',
+        {params},
+      );
 
       if (!response.data.status) {
         throw new Error('Failed to fetch products');
@@ -131,6 +214,152 @@ class ApiService {
 
       if (!response.data.status) {
         throw new Error('Failed to fetch product');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async createProduct(
+    data: CreateProductRequest,
+  ): Promise<Product> {
+    try {
+      const response = await this.client.post<ProductResponse>(
+        '/product/',
+        data,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to create product');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async updateProduct(
+    productId: number,
+    data: UpdateProductRequest,
+  ): Promise<Product> {
+    try {
+      const response = await this.client.patch<ProductResponse>(
+        `/product/${productId}`,
+        data,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to update product');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async deleteProduct(productId: number): Promise<void> {
+    try {
+      await this.client.delete(`/product/${productId}`);
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async getProductReviews(productId: number): Promise<Review[]> {
+    try {
+      const response = await this.client.get<ReviewListResponse>(
+        `/product/${productId}/review`,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to fetch reviews');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async addProductReview(
+    productId: number,
+    data: AddReviewRequest,
+  ): Promise<Review> {
+    try {
+      const response = await this.client.post<ReviewResponse>(
+        `/product/${productId}/review`,
+        data,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to add review');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async getPaymentMethods(): Promise<PaymentMethod[]> {
+    try {
+      const response =
+        await this.client.get<PaymentMethodsResponse>('/order/payment-methods');
+
+      if (!response.data.status) {
+        throw new Error('Failed to fetch payment methods');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async createOrder(data: CreateOrderPayload): Promise<Order> {
+    try {
+      const response = await this.client.post<OrderResponse>('/order/', data);
+
+      if (!response.data.status) {
+        throw new Error('Failed to create order');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async getOrders(): Promise<Order[]> {
+    try {
+      const response = await this.client.get<OrderListResponse>('/order/');
+
+      if (!response.data.status) {
+        throw new Error('Failed to fetch orders');
+      }
+
+      return response.data.data;
+    } catch (error) {
+      throw this.handleError(error as AxiosError<ApiErrorResponse>);
+    }
+  }
+
+  public async updateOrderStatus(
+    orderId: number,
+    data: UpdateOrderStatusPayload,
+  ): Promise<Order> {
+    try {
+      const response = await this.client.patch<OrderResponse>(
+        `/order/${orderId}/status`,
+        data,
+      );
+
+      if (!response.data.status) {
+        throw new Error('Failed to update order status');
       }
 
       return response.data.data;

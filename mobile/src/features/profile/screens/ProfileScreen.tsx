@@ -9,6 +9,7 @@ import {
 import {FontAwesome} from '@react-native-vector-icons/fontawesome';
 import Background from '../../../shared/components/Background';
 import {ErrorDisplay} from '../../../shared/components/ErrorDisplay';
+import {Header} from '../../../shared/components/Header';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import {
   fetchProfile,
@@ -20,7 +21,7 @@ import {logoutUser, selectAuthUser} from '../../auth/authSlice';
 import type {ProfileScreenProps} from '../../../types/navigation';
 import {styles} from './ProfileScreen.styles';
 
-const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation: _navigation}) => {
+const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
   const dispatch = useAppDispatch();
   const authUser = useAppSelector(selectAuthUser);
   const profileData = useAppSelector(selectProfileData);
@@ -38,6 +39,14 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation: _navigation}) 
   const handleLogout = useCallback(() => {
     dispatch(logoutUser());
   }, [dispatch]);
+
+  const handleGoBack = useCallback(() => {
+    navigation.goBack();
+  }, [navigation]);
+
+  const handleGearPress = useCallback((): void => {
+    // TODO: open settings
+  }, []);
 
   if (loading) {
     return (
@@ -74,6 +83,12 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation: _navigation}) 
   return (
     <Background>
       <View style={styles.page}>
+        <Header
+          title="Profile Settings"
+          onBack={handleGoBack}
+          rightIconName="cog"
+          onRightPress={handleGearPress}
+        />
         <ScrollView contentContainerStyle={styles.content}>
           <View style={[styles.card, styles.topCard]}>
             <View style={styles.avatarWrap}>

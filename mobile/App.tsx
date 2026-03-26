@@ -56,18 +56,16 @@ const AppContent: FC = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator screenOptions={{headerShown: false}}>
         {isAuthenticated && (
           <>
             <Stack.Screen
               name="Main"
               component={MainNavigator}
-              options={{title: 'ReactNativeStater'}}
             />
             <Stack.Screen
               name="ProductDetail"
               component={ProductDetailScreen}
-              options={{title: 'Product Detail'}}
             />
           </>
         )}
@@ -75,7 +73,6 @@ const AppContent: FC = () => {
           <Stack.Screen
             name="SignIn"
             component={SignInScreen}
-            options={{title: 'ReactNativeStater'}}
           />
         )}
       </Stack.Navigator>
