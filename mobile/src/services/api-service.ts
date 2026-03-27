@@ -26,7 +26,13 @@ import {
   PaymentMethodsResponse,
   PaymentMethod,
 } from '../models/order';
-import {getUserSession, refreshUserSessionExpiry} from './user-session';
+import {
+  clearUserSession,
+  getUserSession,
+  refreshUserSessionExpiry,
+} from './user-session';
+import {triggerAuthRedirect} from './auth-redirect';
+import {AuthRedirectError} from './errors/auth-errors';
 
 class ApiService {
   private client: AxiosInstance;
@@ -57,9 +63,37 @@ class ApiService {
 
     this.client.interceptors.response.use(
       response => response,
-      (error: AxiosError<ApiErrorResponse>) => {
+      async (error: AxiosError<ApiErrorResponse>) => {
+        if (this.isAuthError(error)) {
+          await clearUserSession();
+          triggerAuthRedirect();
+          return Promise.reject(new AuthRedirectError());
+        }
+
         return Promise.reject(this.handleError(error));
       },
+    );
+  }
+
+  private isAuthError(error: AxiosError<ApiErrorResponse>): boolean {
+    const statusCode = error.response?.status;
+    if (statusCode === 401 || statusCode === 403) {
+      return true;
+    }
+
+    const apiMessage = error.response?.data?.error;
+    const normalizedMessage =
+      (typeof apiMessage === 'string'
+        ? apiMessage
+        : apiMessage?.message || error.message || '')
+        .toLowerCase();
+
+    return (
+      normalizedMessage.includes('token') ||
+      normalizedMessage.includes('jwt') ||
+      normalizedMessage.includes('unauthorized') ||
+      normalizedMessage.includes('forbidden') ||
+      normalizedMessage.includes('expired')
     );
   }
 

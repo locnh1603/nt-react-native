@@ -1,13 +1,19 @@
 import React, {FC, useMemo} from 'react';
 import {Image, ImageSourcePropType, Pressable, Text, View} from 'react-native';
 import ImageAssets from '../../../assets/images';
-import type {Product} from '../../../models/product';
+import type {PriceUnit, Product} from '../../../models/product';
 import {styles} from './ProductDisplay.styles';
 
 interface ProductDisplayProps {
   product: Product;
   onAddPress?: (product: Product) => void;
 }
+
+const currencyByUnit: Record<PriceUnit, string> = {
+  dollar: 'USD',
+  euro: 'EUR',
+  inr: 'INR',
+};
 
 export const ProductDisplay: FC<ProductDisplayProps> = ({
   product,
@@ -25,6 +31,21 @@ export const ProductDisplay: FC<ProductDisplayProps> = ({
     onAddPress?.(product);
   };
 
+  const formattedPrice = useMemo((): string => {
+    const currency = product.priceUnit ? currencyByUnit[product.priceUnit] : 'USD';
+
+    try {
+      return new Intl.NumberFormat(undefined, {
+        style: 'currency',
+        currency,
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      }).format(product.price);
+    } catch {
+      return `${currency} ${product.price.toFixed(2)}`;
+    }
+  }, [product.price, product.priceUnit]);
+
   return (
     <View style={styles.card}>
       <View style={styles.imageWrap}>
@@ -41,7 +62,7 @@ export const ProductDisplay: FC<ProductDisplayProps> = ({
         <Text style={styles.category}>{product.priceUnit ?? ''}</Text>
 
         <View style={styles.footer}>
-          <Text style={styles.price}>${product.price.toFixed(2)}</Text>
+          <Text style={styles.price}>{formattedPrice}</Text>
           <Pressable style={styles.addButton} onPress={handleAddPress}>
             <Text style={styles.addButtonText}>+</Text>
           </Pressable>

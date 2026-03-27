@@ -17,6 +17,8 @@ import Background from '../../../shared/components/Background';
 import {ErrorDisplay} from '../../../shared/components/ErrorDisplay';
 import type {Product} from '../../../models/product';
 import {ProductCard} from '../components/ProductCard';
+import {recordProductHistory} from '../../../services/storage/realm/product-history-service';
+import {useTranslation} from 'react-i18next';
 import {styles} from './HomeScreen.styles';
 
 
@@ -24,6 +26,7 @@ const HomeScreen: FC<HomeScreenProps> = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const dispatch = useAppDispatch();
+  const {t} = useTranslation();
   const products = useAppSelector(selectProducts);
   const loading = useAppSelector(selectProductsLoading);
   const error = useAppSelector(selectProductsError);
@@ -46,10 +49,15 @@ const HomeScreen: FC<HomeScreenProps> = () => {
 
   const handleProductPress = useCallback(
     (product: Product): void => {
+      void recordProductHistory(product);
       navigation.navigate('ProductDetail', {productId: product.id});
     },
     [navigation],
   );
+
+  const handleHistoryPress = useCallback((): void => {
+    navigation.navigate('ProductHistory');
+  }, [navigation]);
 
   const handleAddToCart = useCallback((_product: Product): void => {
     // Basic template action, can be replaced with cart logic.
@@ -63,11 +71,11 @@ const HomeScreen: FC<HomeScreenProps> = () => {
     <Background>
       <View style={styles.page}>
         <View style={styles.headerRow}>
-          <Text style={styles.title}>Discover</Text>
+          <Text style={styles.title}>{t('home.discoverTitle')}</Text>
 
           <View style={styles.headerActions}>
-            <Pressable style={styles.iconButton}>
-              <FontAwesome name="bell" size={20} color="#111827" />
+            <Pressable style={styles.iconButton} onPress={handleHistoryPress}>
+              <FontAwesome name="history" size={20} color="#111827" />
             </Pressable>
 
             <Pressable style={styles.iconButton}>
@@ -81,7 +89,7 @@ const HomeScreen: FC<HomeScreenProps> = () => {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Search products, brands..."
+            placeholder={t('home.searchPlaceholder')}
             placeholderTextColor="#98A2B3"
             style={styles.searchInput}
           />
@@ -90,14 +98,14 @@ const HomeScreen: FC<HomeScreenProps> = () => {
         {loading ? (
           <View style={styles.centerBlock}>
             <ActivityIndicator size="large" color="#0DF2F2" />
-            <Text style={styles.statusText}>Loading products...</Text>
+            <Text style={styles.statusText}>{t('home.loadingProducts')}</Text>
           </View>
         ) : null}
 
         {!loading && error ? (
           <View style={styles.centerBlock}>
             <ErrorDisplay
-              title="Error Loading Products"
+              title={t('home.errorLoadingProductsTitle')}
               message={error}
               onRetry={handleRetry}
             />
@@ -110,7 +118,7 @@ const HomeScreen: FC<HomeScreenProps> = () => {
             showsVerticalScrollIndicator={false}>
             {filteredProducts.length === 0 ? (
               <View style={styles.centerBlock}>
-                <Text style={styles.statusText}>No products found.</Text>
+                <Text style={styles.statusText}>{t('home.noProductsFound')}</Text>
               </View>
             ) : (
               <View style={styles.productsGrid}>

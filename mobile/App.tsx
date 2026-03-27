@@ -1,5 +1,6 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import './src/assets/translation/i18n';
 import MainNavigator from './src/navigation/MainNavigator';
 import {Provider} from 'react-redux';
 import store from './src/app/store';
@@ -9,9 +10,13 @@ import {FC, useEffect, useState} from 'react';
 import {ActivityIndicator, View} from 'react-native';
 import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SignInScreen} from './src/features/auth';
-import {ProductDetailScreen} from './src/features/products';
-import {restoreUserSession, selectIsAuthenticated} from './src/features/auth';
-import {initializeRealm} from './src/services/storage/realm/realm-client';
+import {ProductDetailScreen, ProductHistoryScreen} from './src/features/products';
+import {
+  clearAuth,
+  restoreUserSession,
+  selectIsAuthenticated,
+} from './src/features/auth';
+import {setAuthRedirectHandler} from './src/services/auth-redirect';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -34,12 +39,6 @@ const AppContent: FC = () => {
     let isMounted = true;
 
     const bootstrapSession = async (): Promise<void> => {
-      try {
-        await initializeRealm();
-      } catch {
-        // Realm bootstrap is best-effort during migration; HTTP provider remains fallback.
-      }
-
       await dispatch(restoreUserSession());
       if (isMounted) {
         setIsSessionReady(true);
@@ -50,6 +49,16 @@ const AppContent: FC = () => {
 
     return () => {
       isMounted = false;
+    };
+  }, [dispatch]);
+
+  useEffect(() => {
+    setAuthRedirectHandler(() => {
+      dispatch(clearAuth());
+    });
+
+    return () => {
+      setAuthRedirectHandler(null);
     };
   }, [dispatch]);
 
@@ -73,6 +82,10 @@ const AppContent: FC = () => {
             <Stack.Screen
               name="ProductDetail"
               component={ProductDetailScreen}
+            />
+            <Stack.Screen
+              name="ProductHistory"
+              component={ProductHistoryScreen}
             />
           </>
         )}

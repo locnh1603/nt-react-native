@@ -22,8 +22,8 @@ export const ListItem: FC<ListItemProps> = ({item}) => {
         resizeMode="cover"
       />
       <View style={styles.textContainer}>
-        <Text style={styles.title}>Title: {item.title}</Text>
-        <Text style={styles.body}>{item.imageUrl}</Text>
+        <Text style={styles.title}>{item.title}</Text>
+        <Text style={styles.body}>{item.body}</Text>
       </View>
     </View>
   );

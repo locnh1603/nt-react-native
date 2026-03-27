@@ -82,7 +82,6 @@ export const storeUserSession = async ({
       },
     );
   } catch {
-    // Intentionally swallow keychain write failures so auth can continue.
   }
 };
 
@@ -124,7 +123,6 @@ export const refreshUserSessionExpiry = async (
       },
     );
   } catch {
-    // Intentionally swallow keychain write failures so request flow can continue.
   }
 };
 
@@ -148,7 +146,6 @@ export const updateUserSessionUser = async (user: UserProfile): Promise<void> =>
       },
     );
   } catch {
-    // Intentionally swallow keychain write failures so profile flow can continue.
   }
 };
 
@@ -158,6 +155,5 @@ export const clearUserSession = async (): Promise<void> => {
       service: KEYCHAIN_SERVICE,
     });
   } catch {
-    // Intentionally swallow keychain clear failures.
   }
 };

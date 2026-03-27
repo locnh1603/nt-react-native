@@ -1,6 +1,7 @@
 import React from 'react';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import {Image, StyleSheet} from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {ProfileScreen} from '../features/profile';
 import {OrdersScreen} from '../features/orders';
 import {HomeScreen} from '../features/products';
@@ -9,6 +10,8 @@ import type {MainNavigatorProps, MainTabParamList} from '../types/navigation';
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
 const MainNavigator: React.FC<MainNavigatorProps> = () => {
+  const {t} = useTranslation();
+
   return (
     <Tab.Navigator
       screenOptions={{
@@ -19,7 +22,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
         name="Home"
         component={HomeScreen}
         options={{
-          tabBarLabel: 'Home',
+          tabBarLabel: t('mainTab.home'),
           tabBarIcon: ({focused}) => (
             <Image
               source={require('../assets/images/home.png')}
@@ -33,7 +36,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
         name="Orders"
         component={OrdersScreen}
         options={{
-          tabBarLabel: 'Orders',
+          tabBarLabel: t('mainTab.orders'),
           tabBarIcon: ({focused}) => (
             <Image
               source={require('../assets/images/list.png')}
@@ -47,7 +50,7 @@ const MainNavigator: React.FC<MainNavigatorProps> = () => {
         name="Profile"
         component={ProfileScreen}
         options={{
-          tabBarLabel: 'Profile',
+          tabBarLabel: t('mainTab.profile'),
           tabBarIcon: ({focused}) => (
             <Image
               source={require('../assets/images/person.png')}

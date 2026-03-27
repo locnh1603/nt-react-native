@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from 'react-native';
+import {useTranslation} from 'react-i18next';
 import {Header} from '../../../shared/components/Header';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
 import {
@@ -29,6 +30,7 @@ export const ProductDetailScreen: FC<ProductDetailScreenProps> = ({
   navigation,
   route,
 }) => {
+  const {t} = useTranslation();
   const dispatch = useAppDispatch();
   const product = useAppSelector(selectSelectedProduct);
   const loading = useAppSelector(selectProductsLoading);
@@ -71,8 +73,8 @@ export const ProductDetailScreen: FC<ProductDetailScreenProps> = ({
     return (
       <View style={styles.centered}>
         <ErrorDisplay
-          title="Error"
-          message={error ?? 'Product not found'}
+          title={t('productDetail.errorTitle')}
+          message={error ?? t('productDetail.notFound')}
           onRetry={handleRetry}
         />
       </View>
@@ -86,7 +88,7 @@ export const ProductDetailScreen: FC<ProductDetailScreenProps> = ({
   return (
     <View style={styles.screen}>
       <Header
-        title="Product Details"
+        title={t('productDetail.title')}
         onBack={handleGoBack}
         rightIconName="share-alt"
       />
@@ -113,7 +115,9 @@ export const ProductDetailScreen: FC<ProductDetailScreenProps> = ({
             </Text>
           </View>
 
-          <Text style={styles.sectionTitle}>Product Description</Text>
+          <Text style={styles.sectionTitle}>
+            {t('productDetail.descriptionTitle')}
+          </Text>
           <Text style={styles.description}>{product.description}</Text>
         </View>
       </ScrollView>
@@ -121,10 +125,10 @@ export const ProductDetailScreen: FC<ProductDetailScreenProps> = ({
       {/* CTA buttons */}
       <View style={styles.ctaRow}>
         <Button style={styles.addToCartButton} onPress={handleAddToCart}>
-          <Text style={styles.addToCartText}>Add to Cart</Text>
+          <Text style={styles.addToCartText}>{t('productDetail.addToCart')}</Text>
         </Button>
         <Button style={styles.buyNowButton} onPress={handleBuyNow}>
-          <Text style={styles.buyNowText}>Buy Now</Text>
+          <Text style={styles.buyNowText}>{t('productDetail.buyNow')}</Text>
         </Button>
       </View>
     </View>

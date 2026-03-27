@@ -21,9 +21,11 @@ import {
   signupUser,
 } from '../authSlice';
 import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useTranslation} from 'react-i18next';
 
 export const SignInScreen: FC<SignInScreenProps> = () => {
   const dispatch = useAppDispatch();
+  const {t} = useTranslation();
   const authError = useAppSelector(selectAuthError);
   const authLoading = useAppSelector(selectAuthLoading);
   const passwordRequirementPattern: RegExp = /^(?=.*[A-Z])(?=.*\d).+$/;
@@ -173,12 +175,14 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                 <FontAwesome name="shopping-bag" size={24} color="#1ED9DE" />
               </View>
               <Text style={styles.welcome}>
-                {isLoginMode ? 'Welcome Back' : 'Create Account'}
+                {isLoginMode
+                  ? t('signin.welcomeBack')
+                  : t('signin.createAccountTitle')}
               </Text>
               <Text style={styles.details}>
                 {isLoginMode
-                  ? 'Please enter your details'
-                  : 'Fill in your details to get started'}
+                  ? t('signin.enterDetails')
+                  : t('signin.fillDetails')}
               </Text>
             </View>
 
@@ -194,7 +198,7 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     styles.tabText,
                     isLoginMode ? styles.tabTextActive : null,
                   ]}>
-                  Login
+                  {t('signin.loginTab')}
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -208,7 +212,7 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     styles.tabText,
                     !isLoginMode ? styles.tabTextActive : null,
                   ]}>
-                  Sign Up
+                  {t('signin.signUpTab')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -218,10 +222,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                 {isLoginMode ? (
                   <>
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Username</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.usernameLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="johndoe123"
+                        placeholder={t('signin.usernamePlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="next"
                         value={username.value}
@@ -237,10 +241,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Password</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.passwordLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="........"
+                        placeholder={t('signin.passwordPlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="done"
                         value={password.value}
@@ -255,16 +259,16 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <TouchableOpacity>
-                      <Text style={styles.forgotLink}>Forgot Password?</Text>
+                      <Text style={styles.forgotLink}>{t('signin.forgotPassword')}</Text>
                     </TouchableOpacity>
                   </>
                 ) : (
                   <>
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Username</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.usernameLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="johndoe"
+                        placeholder={t('signin.signUpUsernamePlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="next"
                         value={signupUsername.value}
@@ -282,10 +286,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>First Name</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.firstNameLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="John"
+                        placeholder={t('signin.firstNamePlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="next"
                         value={firstName.value}
@@ -300,10 +304,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Last Name</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.lastNameLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="Doe"
+                        placeholder={t('signin.lastNamePlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="next"
                         value={lastName.value}
@@ -318,10 +322,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Email</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.emailLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="you@example.com"
+                        placeholder={t('signin.emailPlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         keyboardType="email-address"
                         returnKeyType="next"
@@ -340,10 +344,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Password</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.passwordLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="Abcd1234"
+                        placeholder={t('signin.signUpPasswordPlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="next"
                         value={signupPassword.value}
@@ -360,10 +364,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Confirm Password</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.confirmPasswordLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="Abcd1234"
+                        placeholder={t('signin.signUpPasswordPlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         returnKeyType="next"
                         value={confirmPassword.value}
@@ -380,10 +384,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                     </View>
 
                     <View style={styles.fieldBlock}>
-                      <Text style={styles.fieldLabel}>Age</Text>
+                      <Text style={styles.fieldLabel}>{t('signin.ageLabel')}</Text>
                       <RNTextInput
                         style={styles.fieldInput}
-                        placeholder="25"
+                        placeholder={t('signin.agePlaceholder')}
                         placeholderTextColor="#9CA3AF"
                         keyboardType="numeric"
                         returnKeyType="done"
@@ -413,8 +417,8 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                 </Pressable>
                 <Text style={styles.biometricLabel}>
                   {isLoginMode
-                    ? 'Use biometrics for faster login'
-                    : 'Enable biometric login'}
+                    ? t('signin.useBiometrics')
+                    : t('signin.enableBiometrics')}
                 </Text>
               </View>
 
@@ -429,11 +433,11 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                 <Text style={styles.primaryButtonText}>
                   {authLoading
                     ? isLoginMode
-                      ? 'Signing In...'
-                      : 'Signing Up...'
+                      ? t('signin.signingIn')
+                      : t('signin.signingUp')
                     : isLoginMode
-                    ? 'Sign In'
-                    : 'Sign Up'}
+                    ? t('signin.signInAction')
+                    : t('signin.signUpAction')}
                 </Text>
               </TouchableOpacity>
 
@@ -447,7 +451,7 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                         color="#08D9E2"
                       />
                       <Text style={styles.secondaryButtonText}>
-                        Sign in with Biometrics
+                        {t('signin.signInWithBiometrics')}
                       </Text>
                     </View>
                   </TouchableOpacity>
@@ -455,7 +459,7 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                   <View style={styles.oauthSection}>
                     <View style={styles.dividerRow}>
                       <View style={styles.dividerLine} />
-                      <Text style={styles.dividerText}>Or continue with</Text>
+                      <Text style={styles.dividerText}>{t('signin.orContinueWith')}</Text>
                       <View style={styles.dividerLine} />
                     </View>
 
@@ -467,7 +471,7 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                             size={18}
                             color="#EA4335"
                           />
-                          <Text style={styles.socialText}>Google</Text>
+                          <Text style={styles.socialText}>{t('signin.google')}</Text>
                         </View>
                       </TouchableOpacity>
 
@@ -478,7 +482,7 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
                             size={18}
                             color="#1877F2"
                           />
-                          <Text style={styles.socialText}>Facebook</Text>
+                          <Text style={styles.socialText}>{t('signin.facebook')}</Text>
                         </View>
                       </TouchableOpacity>
                     </View>
@@ -486,9 +490,10 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
 
                   <View style={styles.legalSection}>
                     <Text style={styles.legalText}>
-                      By continuing, you agree to our{' '}
-                      <Text style={styles.legalLink}>Terms of Service</Text>{' '}
-                      and <Text style={styles.legalLink}>Privacy Policy</Text>.
+                      {t('signin.legalPrefix')}{' '}
+                      <Text style={styles.legalLink}>{t('signin.termsOfService')}</Text>{' '}
+                      {t('signin.legalAnd')}{' '}
+                      <Text style={styles.legalLink}>{t('signin.privacyPolicy')}</Text>.
                     </Text>
                   </View>
                 </>

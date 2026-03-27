@@ -54,9 +54,6 @@ const ProductCardComponent: FC<ProductCardProps> = ({
         <Text style={styles.title} numberOfLines={1}>
           {product.name}
         </Text>
-        <Text style={styles.category} numberOfLines={1}>
-          {product.priceUnit ?? ''}
-        </Text>
 
         <View style={styles.footer}>
           <View style={styles.priceBlock}>

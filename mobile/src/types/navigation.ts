@@ -4,6 +4,7 @@ import type {NativeStackScreenProps} from '@react-navigation/native-stack';
 export type RootStackParamList = {
 	Main: undefined;
 	ProductDetail: {productId: number};
+  ProductHistory: undefined;
   SignIn: undefined;
 };
 
@@ -35,4 +36,9 @@ export type SignInScreenProps = NativeStackScreenProps<
 export type ProductDetailScreenProps = NativeStackScreenProps<
 	RootStackParamList,
 	'ProductDetail'
+>;
+
+export type ProductHistoryScreenProps = NativeStackScreenProps<
+	RootStackParamList,
+	'ProductHistory'
 >;

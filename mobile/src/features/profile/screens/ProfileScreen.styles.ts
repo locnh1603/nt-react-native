@@ -21,6 +21,7 @@ type ProfileScreenStyles = {
   emailBox: ViewStyle;
   emailText: TextStyle;
   valueText: TextStyle;
+  languageSelector: ViewStyle;
   actionCard: ViewStyle;
   actionLeft: ViewStyle;
   actionIconWrap: ViewStyle;
@@ -152,6 +153,9 @@ export const styles = StyleSheet.create<ProfileScreenStyles>({
     fontSize: 14,
     fontWeight: '500',
     marginBottom: 14,
+  },
+  languageSelector: {
+    marginTop: 2,
   },
   actionCard: {
     height: 62,

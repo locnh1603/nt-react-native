@@ -1,7 +1,5 @@
 import Realm from 'realm';
 import {realmSchemas} from './schemas';
-import {handleRealmMigration, REALM_SCHEMA_VERSION} from './realm-migration';
-import {ensureRealmSeedData} from './seed';
 
 let realmInstance: Realm | null = null;
 
@@ -12,11 +10,8 @@ export const initializeRealm = async (): Promise<Realm> => {
 
   realmInstance = await Realm.open({
     schema: realmSchemas,
-    schemaVersion: REALM_SCHEMA_VERSION,
-    migration: handleRealmMigration,
+    schemaVersion: 1,
   });
-
-  ensureRealmSeedData(realmInstance);
 
   return realmInstance;
 };
