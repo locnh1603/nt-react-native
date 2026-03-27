@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit';
-import {apiService} from '../../services/api-service';
+import {dataService} from '../../services/data/data-service';
 import {LoginRequest, SignupRequest, AuthResponse} from '../../models/auth';
 import {UserProfile} from '../../models/user';
 import type {UserSession} from '../../services/user-session';
@@ -40,10 +40,10 @@ export const loginUser = createAsyncThunk<
 	{rejectValue: string}
 >('auth/login', async (credentials, {rejectWithValue}) => {
 	try {
-		const response = await apiService.login(credentials);
+		const response = await dataService.login(credentials);
 		const {token} = response.data;
 		await storeUserSession({token});
-		const user = await apiService.getUserProfile();
+		const user = await dataService.getUserProfile();
 		await updateUserSessionUser(user);
 		return {token, user};
 	} catch (error) {
@@ -59,10 +59,10 @@ export const signupUser = createAsyncThunk<
 	{rejectValue: string}
 >('auth/signup', async (userData, {rejectWithValue}) => {
 	try {
-		const response = await apiService.signup(userData);
+		const response = await dataService.signup(userData);
 		const {token} = response.data;
 		await storeUserSession({token});
-		const user = await apiService.getUserProfile();
+		const user = await dataService.getUserProfile();
 		await updateUserSessionUser(user);
 		return {token, user};
 	} catch (error) {
@@ -77,7 +77,7 @@ export const logoutUser = createAsyncThunk<void, void, {rejectValue: string}>(
 	async (_, {rejectWithValue}) => {
 		let logoutError: unknown;
 		try {
-			await apiService.logout();
+			await dataService.logout();
 		} catch (error) {
 			logoutError = error;
 		}
@@ -104,7 +104,7 @@ export const fetchUserProfile = createAsyncThunk<
 	{rejectValue: string}
 >('auth/fetchProfile', async (_, {rejectWithValue}) => {
 	try {
-		const profile = await apiService.getUserProfile();
+		const profile = await dataService.getUserProfile();
 		await updateUserSessionUser(profile);
 		return profile;
 	} catch (error) {

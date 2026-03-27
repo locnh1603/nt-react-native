@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppThunk} from '../../thunks/app-thunk';
-import {apiService} from '../../services/api-service';
+import {dataService} from '../../services/data/data-service';
 import {UserProfile} from '../../models/user';
 
 interface ProfileState {
@@ -40,7 +40,7 @@ export const {fetchProfileStart, fetchProfileSuccess, fetchProfileFailure} =
 export const fetchProfile = (): AppThunk => async dispatch => {
 	dispatch(fetchProfileStart());
 	try {
-		const response = await apiService.getUserProfile();
+		const response = await dataService.getUserProfile();
 		dispatch(fetchProfileSuccess(response));
 	} catch (error) {
 		const errorMessage = error ? String(error) : 'Unknown error';

@@ -1,5 +1,5 @@
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
-import {apiService} from '../../services/api-service';
+import {dataService} from '../../services/data/data-service';
 import {Product} from '../../models/product';
 
 interface ProductState {
@@ -22,7 +22,7 @@ export const fetchProducts = createAsyncThunk<
 	{rejectValue: string}
 >('products/fetchAll', async (_, {rejectWithValue}) => {
 	try {
-		const products = await apiService.getProducts();
+		const products = await dataService.getProducts();
 		return products;
 	} catch (error) {
 		return rejectWithValue(
@@ -37,7 +37,7 @@ export const fetchProductById = createAsyncThunk<
 	{rejectValue: string}
 >('products/fetchById', async (productId, {rejectWithValue}) => {
 	try {
-		const product = await apiService.getProductById(productId);
+		const product = await dataService.getProductById(productId);
 		return product;
 	} catch (error) {
 		return rejectWithValue(

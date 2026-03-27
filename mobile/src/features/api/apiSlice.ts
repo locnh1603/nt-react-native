@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppThunk} from '../../thunks/app-thunk';
-import {apiService} from '../../services/api-service';
+import {dataService} from '../../services/data/data-service';
 import type {RootState} from '../../app/store';
 
 interface Photo {
@@ -48,7 +48,7 @@ export const {fetchDataStart, fetchDataSuccess, fetchDataFailure} =
 export const fetchApiData = (): AppThunk => async dispatch => {
 	dispatch(fetchDataStart());
 	try {
-		const products = await apiService.getProducts();
+		const products = await dataService.getProducts();
 		dispatch(fetchDataSuccess(products as unknown as Photo[]));
 	} catch (error) {
 		const errorMessage = error ? String(error) : 'Unknown error';

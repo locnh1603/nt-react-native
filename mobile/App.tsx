@@ -11,6 +11,7 @@ import {GestureHandlerRootView} from 'react-native-gesture-handler';
 import {SignInScreen} from './src/features/auth';
 import {ProductDetailScreen} from './src/features/products';
 import {restoreUserSession, selectIsAuthenticated} from './src/features/auth';
+import {initializeRealm} from './src/services/storage/realm/realm-client';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -33,6 +34,12 @@ const AppContent: FC = () => {
     let isMounted = true;
 
     const bootstrapSession = async (): Promise<void> => {
+      try {
+        await initializeRealm();
+      } catch {
+        // Realm bootstrap is best-effort during migration; HTTP provider remains fallback.
+      }
+
       await dispatch(restoreUserSession());
       if (isMounted) {
         setIsSessionReady(true);
