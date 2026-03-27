@@ -7,19 +7,6 @@ import {rootReducer} from '../app/rootReducer';
 import type {MainNavigatorProps} from '../types/navigation';
 import type {RootState} from '../app/store';
 
-// Mock native storage services to allow screens to render without native module errors
-jest.mock('../services/storage/realm/product-history-service', () => ({
-  recordProductHistory: jest.fn(),
-}));
-
-jest.mock('../services/storage/realm/realm-client', () => ({
-  initializeRealm: jest.fn(),
-}));
-
-jest.mock('realm', () => ({
-  default: jest.fn(),
-}));
-
 // Create a test store with preloaded state to avoid Redux errors
 const createTestStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({

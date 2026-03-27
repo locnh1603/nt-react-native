@@ -50,3 +50,35 @@ jest.mock('@react-navigation/native', () => ({
 	},
 	useRoute: () => ({params: {}}),
 }));
+
+// Global Realm-related mocks shared across tests.
+jest.mock('realm', () => ({
+	__esModule: true,
+	default: {
+		open: jest.fn(async () => ({
+			isClosed: false,
+			close: jest.fn(),
+			write: jest.fn(callback => callback()),
+			create: jest.fn(),
+			objects: jest.fn(() => ({
+				sorted: jest.fn(() => []),
+			})),
+			delete: jest.fn(),
+		})),
+		UpdateMode: {
+			Modified: 'modified',
+		},
+	},
+}));
+
+jest.mock('./src/services/storage/realm/realm-client', () => ({
+	initializeRealm: jest.fn(),
+	getRealm: jest.fn(),
+	closeRealm: jest.fn(),
+}));
+
+jest.mock('./src/services/storage/realm/product-history-service', () => ({
+	recordProductHistory: jest.fn(),
+	getProductHistory: jest.fn(async () => []),
+	clearProductHistory: jest.fn(),
+}));

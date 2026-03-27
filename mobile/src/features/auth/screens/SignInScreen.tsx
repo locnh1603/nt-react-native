@@ -167,7 +167,8 @@ export const SignInScreen: FC<SignInScreenProps> = () => {
         style={styles.page}
         contentContainerStyle={styles.pageContent}
         keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        testID="sign-in-screen">
         <View style={styles.shell}>
           <View style={styles.sectionStack}>
             <View style={styles.headerPanel}>

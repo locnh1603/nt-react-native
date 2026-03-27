@@ -64,8 +64,8 @@ const AppContent: FC = () => {
 
   if (!isSessionReady) {
     return (
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <ActivityIndicator size="large" color="#20D9DE" />
+      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}} testID="loading-container">
+        <ActivityIndicator size="large" color="#20D9DE" testID="loading-indicator" />
       </View>
     );
   }

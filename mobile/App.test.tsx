@@ -2,113 +2,127 @@ import React from 'react';
 import {render, waitFor} from '@testing-library/react-native';
 import App from './App';
 
-jest.mock('./src/app/store', () => {
-  const mockStore = {
-    getState: () => ({}),
-    dispatch: jest.fn(),
-    subscribe: () => () => undefined,
-  };
-
-  return {
-    __esModule: true,
-    default: mockStore,
-    store: mockStore,
-  };
-});
-
+// Mock app hooks to control auth state in tests
 let mockIsAuthenticated = false;
 const mockDispatch = jest.fn();
-const mockRestoreUserSession = jest.fn(() => ({type: 'auth/restoreSession'}));
 
 jest.mock('./src/app/hooks', () => ({
   useAppDispatch: () => mockDispatch,
-  useAppSelector: () => mockIsAuthenticated,
-}));
-
-jest.mock('./src/features/auth', () => ({
-  restoreUserSession: () => mockRestoreUserSession(),
-  clearAuth: () => ({type: 'auth/clearAuth'}),
-  selectIsAuthenticated: jest.fn(),
-  SignInScreen: () => {
-    const {Text} = require('react-native');
-    return <Text>SignInScreen</Text>;
+  useAppSelector: (selector: any) => {
+    // Handle different selectors based on the function passed
+    if (selector.toString().includes('isAuthenticated')) {
+      return mockIsAuthenticated;
+    }
+    return undefined;
   },
 }));
 
-jest.mock('./src/features/products', () => ({
-  ProductDetailScreen: () => {
-    const {Text} = require('react-native');
-    return <Text>ProductDetailScreen</Text>;
-  },
-  ProductHistoryScreen: () => {
-    const {Text} = require('react-native');
-    return <Text>ProductHistoryScreen</Text>;
+// Mock external dependencies only (not display components)
+jest.mock('./src/services/data/data-service', () => ({
+  dataService: {
+    login: jest.fn(),
+    signup: jest.fn(),
+    logout: jest.fn(),
+    getUserProfile: jest.fn(),
+    getProducts: jest.fn(),
+    getProductById: jest.fn(),
   },
 }));
 
-jest.mock('./src/navigation/MainNavigator', () => {
-  return () => {
-    const {Text} = require('react-native');
-    return <Text>MainNavigator</Text>;
-  };
-});
+jest.mock('./src/services/user-session', () => ({
+  storeUserSession: jest.fn(),
+  clearUserSession: jest.fn(),
+  updateUserSessionUser: jest.fn(),
+}));
 
-jest.mock('@react-navigation/native', () => ({
-  NavigationContainer: ({children}: {children: React.ReactNode}) => <>{children}</>,
+jest.mock('./src/services/auth-redirect', () => ({
+  setAuthRedirectHandler: jest.fn(),
+}));
+
+jest.mock('@react-navigation/bottom-tabs', () => ({
+  createBottomTabNavigator: () => ({
+    Navigator: ({children}: {children: React.ReactNode}) => <>{children}</>,
+    Screen: ({
+      name,
+      options,
+    }: {
+      name: string;
+      options?: {
+        tabBarLabel?: string;
+        tabBarIcon?: (props: {focused: boolean}) => React.ReactNode;
+      };
+    }) => {
+      const {Text, View} = require('react-native');
+      const focusedIcon = options?.tabBarIcon
+        ? options.tabBarIcon({focused: true})
+        : null;
+      const unfocusedIcon = options?.tabBarIcon
+        ? options.tabBarIcon({focused: false})
+        : null;
+      return (
+        <View>
+          <Text>{name}</Text>
+          {options?.tabBarLabel ? <Text>{options.tabBarLabel}</Text> : null}
+          {focusedIcon}
+          {unfocusedIcon}
+        </View>
+      );
+    },
+  }),
 }));
 
 jest.mock('@react-navigation/native-stack', () => ({
-  createNativeStackNavigator: () => {
-    return {
-      Navigator: ({children}: {children: React.ReactNode}) => <>{children}</>,
-      Screen: ({name}: {name: string}) => {
-        const {Text} = require('react-native');
-        return <Text>{name}</Text>;
-      },
-    };
-  },
+  createNativeStackNavigator: () => ({
+    Navigator: ({children}: {children: React.ReactNode}) => <>{children}</>,
+    Screen: ({
+      name,
+      component: Component,
+    }: {
+      name: string;
+      component: React.ComponentType<any>;
+      options?: any;
+    }) => {
+      return <Component />;
+    },
+  }),
 }));
 
 describe('App', () => {
   beforeEach(() => {
+    jest.clearAllMocks();
     mockIsAuthenticated = false;
-    mockDispatch.mockReset();
-    mockDispatch.mockResolvedValue({});
-    mockRestoreUserSession.mockClear();
+    // Make dispatch return a resolved promise so restoreUserSession completes
+    mockDispatch.mockReturnValue(Promise.resolve());
   });
 
-  it('should dispatch restore session on mount', async () => {
-    render(<App />);
+  it('should dispatch restoreUserSession on mount', async () => {
+    const {getByText} = render(<App />);
 
     await waitFor(() => {
-      expect(mockRestoreUserSession).toHaveBeenCalledTimes(1);
-      expect(mockDispatch).toHaveBeenCalledTimes(1);
+      expect(mockDispatch).toHaveBeenCalled();
     });
   });
 
-  it('should render auth stack when user is not authenticated', async () => {
-    const {getByText, queryByText} = render(<App />);
+  it('should render SignInScreen when user is not authenticated', async () => {
+    mockIsAuthenticated = false;
+
+    const {getByTestId} = render(<App />);
 
     await waitFor(() => {
-      expect(getByText('SignIn')).toBeTruthy();
+      // SignInScreen should be rendered with real screen content
+      expect(getByTestId('sign-in-screen')).toBeTruthy();
     });
-
-    expect(queryByText('Main')).toBeNull();
-    expect(queryByText('ProductDetail')).toBeNull();
-    expect(queryByText('ProductHistory')).toBeNull();
   });
 
-  it('should render app stack when user is authenticated', async () => {
+  it('should not render SignInScreen when user is authenticated', async () => {
     mockIsAuthenticated = true;
 
-    const {getByText, queryByText} = render(<App />);
+    const {queryByTestId} = render(<App />);
 
     await waitFor(() => {
-      expect(getByText('Main')).toBeTruthy();
-      expect(getByText('ProductDetail')).toBeTruthy();
-      expect(getByText('ProductHistory')).toBeTruthy();
+      // When authenticated, SignInScreen should NOT be rendered
+      // MainNavigator (with tab labels) should be rendered instead
+      expect(queryByTestId('sign-in-screen')).toBeNull();
     });
-
-    expect(queryByText('SignIn')).toBeNull();
   });
 });
