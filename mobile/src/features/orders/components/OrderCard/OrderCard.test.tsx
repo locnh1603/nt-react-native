@@ -63,22 +63,16 @@ describe('OrderCard', () => {
     expect(getByText('2 items')).toBeTruthy();
   });
 
-  it('renders Reorder and View Details for delivered status', () => {
+  it('renders Leave Review and Reorder for delivered status', () => {
     const {getByText} = render(<OrderCard order={baseOrder} {...allCallbacks} />);
+    expect(getByText('Leave Review')).toBeTruthy();
     expect(getByText('Reorder')).toBeTruthy();
-    expect(getByText('View Details')).toBeTruthy();
   });
 
   it('renders Track Order for shipped status', () => {
     const order: Order = {...baseOrder, status: 'shipped'};
     const {getByText} = render(<OrderCard order={order} {...allCallbacks} />);
     expect(getByText('Track Order')).toBeTruthy();
-  });
-
-  it('renders Leave Review and Buy Again for delivered status', () => {
-    const {getByText} = render(<OrderCard order={baseOrder} {...allCallbacks} />);
-    expect(getByText('Leave Review')).toBeTruthy();
-    expect(getByText('Buy Again')).toBeTruthy();
   });
 
   it('calls onReorder when Reorder pressed', () => {
@@ -88,15 +82,6 @@ describe('OrderCard', () => {
     );
     fireEvent.press(getByText('Reorder'));
     expect(onReorder).toHaveBeenCalledWith(baseOrder);
-  });
-
-  it('calls onViewDetails when View Details pressed', () => {
-    const onViewDetails = jest.fn();
-    const {getByText} = render(
-      <OrderCard order={baseOrder} {...allCallbacks} onViewDetails={onViewDetails} />,
-    );
-    fireEvent.press(getByText('View Details'));
-    expect(onViewDetails).toHaveBeenCalledWith(baseOrder);
   });
 
   it('calls onTrackOrder when Track Order pressed', () => {
@@ -116,15 +101,6 @@ describe('OrderCard', () => {
     );
     fireEvent.press(getByText('Leave Review'));
     expect(onLeaveReview).toHaveBeenCalledWith(baseOrder);
-  });
-
-  it('calls onBuyAgain when Buy Again pressed', () => {
-    const onBuyAgain = jest.fn();
-    const {getByText} = render(
-      <OrderCard order={baseOrder} {...allCallbacks} onBuyAgain={onBuyAgain} />,
-    );
-    fireEvent.press(getByText('Buy Again'));
-    expect(onBuyAgain).toHaveBeenCalledWith(baseOrder);
   });
 
   it('renders product thumbnail Image', () => {

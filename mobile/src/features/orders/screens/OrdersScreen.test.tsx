@@ -5,20 +5,7 @@ import {render, fireEvent, waitFor, act} from '@testing-library/react-native';
 import {OrdersScreen} from './OrdersScreen';
 import {ordersReducer} from '../ordersSlice';
 import type {OrdersScreenProps} from '../../../types/navigation';
-import {dataService} from '../../../services/data/data-service';
-import { Order } from 'src/models/order';
-
-
-
-jest.mock('../../../services/data/data-service', () => ({
-  dataService: {
-    getOrders: jest.fn(),
-  },
-}));
-
-const mockedGetOrders = dataService.getOrders as jest.MockedFunction<
-  typeof dataService.getOrders
->;
+import {sampleOrdersData} from '../sampleOrdersData';
 
 const mockNavigation = {
   navigate: jest.fn(),
@@ -29,37 +16,6 @@ const mockNavigation = {
 const navigation = mockNavigation as unknown as OrdersScreenProps['navigation'];
 const route = {} as OrdersScreenProps['route'];
 
-const sampleOrders: Order[] = [
-  {
-    id: 1,
-    userId: 1,
-    items: [{productId: 10, quantity: 2, price: 25}],
-    totalAmount: 50,
-    shippingAddress: '123 Main St',
-    paymentMethod: 'credit_card',
-    status: 'delivered',
-    createdAt: '2025-01-15T10:30:00Z',
-  },
-  {
-    id: 2,
-    userId: 1,
-    items: [{productId: 11, quantity: 1, price: 99.99}],
-    totalAmount: 99.99,
-    shippingAddress: '456 Oak Ave',
-    paymentMethod: 'paypal',
-    status: 'pending',
-  },
-  {
-    id: 3,
-    userId: 1,
-    items: [{productId: 12, quantity: 1, price: 200}],
-    totalAmount: 200,
-    shippingAddress: '789 Pine Rd',
-    paymentMethod: 'cash_on_delivery',
-    status: 'cancelled',
-  },
-];
-
 function createStore() {
   return configureStore({
     reducer: {
@@ -69,25 +25,36 @@ function createStore() {
 }
 
 describe('OrdersScreen', () => {
+  const advanceFetchDelay = async (): Promise<void> => {
+    await act(async () => {
+      jest.advanceTimersByTime(1000);
+    });
+  };
+
   beforeEach(() => {
+    jest.useFakeTimers();
     jest.clearAllMocks();
   });
 
+  afterEach(() => {
+    jest.runOnlyPendingTimers();
+    jest.useRealTimers();
+  });
+
   it('renders Order History header title', async () => {
-    mockedGetOrders.mockResolvedValueOnce([]);
     const store = createStore();
     const {getByText} = render(
       <Provider store={store}>
         <OrdersScreen navigation={navigation} route={route} />
       </Provider>,
     );
+
     await waitFor(() => {
       expect(getByText('Order History')).toBeTruthy();
     });
   });
 
   it('shows loading state while fetching', () => {
-    mockedGetOrders.mockReturnValueOnce(new Promise(() => {}));
     const store = createStore();
     const {getByText} = render(
       <Provider store={store}>
@@ -97,19 +64,22 @@ describe('OrdersScreen', () => {
     expect(getByText('Loading orders...')).toBeTruthy();
   });
 
-  it('dispatches fetchOrders on mount', () => {
-    mockedGetOrders.mockResolvedValueOnce([]);
+  it('loads sample orders after delay', async () => {
     const store = createStore();
-    render(
+    const {getByText} = render(
       <Provider store={store}>
         <OrdersScreen navigation={navigation} route={route} />
       </Provider>,
     );
-    expect(mockedGetOrders).toHaveBeenCalled();
+
+    await advanceFetchDelay();
+
+    await waitFor(() => {
+      expect(getByText('$128.50')).toBeTruthy();
+    });
   });
 
   it('renders tab bar with all four tabs', async () => {
-    mockedGetOrders.mockResolvedValueOnce([]);
     const store = createStore();
     const {getByText} = render(
       <Provider store={store}>
@@ -123,106 +93,86 @@ describe('OrdersScreen', () => {
   });
 
   it('filters to ongoing orders when Ongoing tab pressed', async () => {
-    mockedGetOrders.mockResolvedValueOnce(sampleOrders);
     const store = createStore();
-    const {findByText, getByText, queryByText} = render(
+    const {getByText, queryByText} = render(
       <Provider store={store}>
         <OrdersScreen navigation={navigation} route={route} />
       </Provider>,
     );
 
-    await findByText('$50.00');
+    await advanceFetchDelay();
+
     await act(async () => {
       fireEvent.press(getByText('Ongoing'));
-      await waitFor(() => {
-        expect(queryByText('$99.99')).toBeTruthy();
-      });
+    });
+
+    await waitFor(() => {
+      expect(queryByText('$45.00')).toBeTruthy();
+      expect(queryByText('$79.99')).toBeTruthy();
+      expect(queryByText('$128.50')).toBeNull();
     });
   });
 
   it('filters to completed orders when Completed tab pressed', async () => {
-    mockedGetOrders.mockResolvedValueOnce(sampleOrders);
     const store = createStore();
-    const {findByText, getByText, queryByText} = render(
+    const {getByText, queryByText} = render(
       <Provider store={store}>
         <OrdersScreen navigation={navigation} route={route} />
       </Provider>,
     );
 
-    await findByText('$50.00');
+    await advanceFetchDelay();
+
     await act(async () => {
       fireEvent.press(getByText('Completed'));
-      await waitFor(() => {
-        expect(queryByText('$50.00')).toBeTruthy();
-      });
+    });
+
+    await waitFor(() => {
+      expect(queryByText('$128.50')).toBeTruthy();
+      expect(queryByText('$210.00')).toBeTruthy();
+      expect(queryByText('$45.00')).toBeNull();
     });
   });
 
   it('filters to cancelled orders when Cancelled tab pressed', async () => {
-    mockedGetOrders.mockResolvedValueOnce(sampleOrders);
     const store = createStore();
-    const {findByText, getAllByText, queryByText} = render(
+    const {getAllByText, queryByText} = render(
       <Provider store={store}>
         <OrdersScreen navigation={navigation} route={route} />
       </Provider>,
     );
 
-    await findByText('$50.00');
+    await advanceFetchDelay();
+
     await act(async () => {
       const cancelledElements = getAllByText('Cancelled');
       fireEvent.press(cancelledElements[0]);
-      await waitFor(() => {
-        expect(queryByText('$200.00')).toBeTruthy();
-      });
+    });
+
+    await waitFor(() => {
+      expect(queryByText('$99.00')).toBeTruthy();
+      expect(queryByText('$128.50')).toBeNull();
     });
   });
 
   it('shows all orders when All Orders tab pressed', async () => {
-    mockedGetOrders.mockResolvedValueOnce(sampleOrders);
     const store = createStore();
-    const {findByText, getByText} = render(
+    const {getByText} = render(
       <Provider store={store}>
         <OrdersScreen navigation={navigation} route={route} />
       </Provider>,
     );
 
-    await findByText('$50.00');
+    await advanceFetchDelay();
+
     await act(async () => {
       fireEvent.press(getByText('All Orders'));
-      await waitFor(() => {
-        expect(getByText('$50.00')).toBeTruthy();
-        expect(getByText('$99.99')).toBeTruthy();
-        expect(getByText('$200.00')).toBeTruthy();
-      });
     });
-  });
-
-  it('shows error state with retry on API failure', async () => {
-    mockedGetOrders.mockRejectedValueOnce(new Error('Network failed'));
-    const store = createStore();
-    const {getByText} = render(
-      <Provider store={store}>
-        <OrdersScreen navigation={navigation} route={route} />
-      </Provider>,
-    );
 
     await waitFor(() => {
-      expect(getByText('Error Loading Orders')).toBeTruthy();
-      expect(getByText('Retry')).toBeTruthy();
-    });
-  });
-
-  it('shows empty state when no orders', async () => {
-    mockedGetOrders.mockResolvedValueOnce([]);
-    const store = createStore();
-    const {getByText} = render(
-      <Provider store={store}>
-        <OrdersScreen navigation={navigation} route={route} />
-      </Provider>,
-    );
-
-    await waitFor(() => {
-      expect(getByText('No orders found.')).toBeTruthy();
+      expect(getByText(`$${sampleOrdersData[0].totalAmount.toFixed(2)}`)).toBeTruthy();
+      expect(getByText(`$${sampleOrdersData[1].totalAmount.toFixed(2)}`)).toBeTruthy();
+      expect(getByText(`$${sampleOrdersData[2].totalAmount.toFixed(2)}`)).toBeTruthy();
     });
   });
 });

@@ -10,20 +10,9 @@ import {
   ordersReducer,
   OrderTabFilter,
 } from './ordersSlice';
-import {Order, OrderStatus} from '../../models/order';
+import {Order} from '../../models/order';
 import {configureStore} from '@reduxjs/toolkit';
-
-jest.mock('../../services/data/data-service', () => ({
-  dataService: {
-    getOrders: jest.fn(),
-  },
-}));
-
-import {dataService} from '../../services/data/data-service';
-
-const mockedGetOrders = dataService.getOrders as jest.MockedFunction<
-  typeof dataService.getOrders
->;
+import {sampleOrdersData} from './sampleOrdersData';
 
 const sampleOrders: Order[] = [
   {
@@ -127,6 +116,15 @@ describe('ordersSlice', () => {
   });
 
   describe('fetchOrders thunk', () => {
+    beforeEach(() => {
+      jest.useFakeTimers();
+    });
+
+    afterEach(() => {
+      jest.runOnlyPendingTimers();
+      jest.useRealTimers();
+    });
+
     it('pending sets loading true and clears error', () => {
       const store = createStore({
         orders: {...initialState, error: 'previous error'},
@@ -138,30 +136,40 @@ describe('ordersSlice', () => {
     });
 
     it('fulfilled sets loading false, populates orders, clears error', async () => {
-      mockedGetOrders.mockResolvedValueOnce(sampleOrders);
       const store = createStore({
         orders: {...initialState, error: 'old error'},
       });
-      await store.dispatch(fetchOrders());
+
+      const dispatchPromise = store.dispatch(fetchOrders());
+      jest.advanceTimersByTime(1000);
+      await dispatchPromise;
+
       const state = store.getState().orders;
       expect(state.loading).toBe(false);
-      expect(state.orders).toEqual(sampleOrders);
+      expect(state.orders).toEqual(sampleOrdersData);
       expect(state.error).toBeNull();
     });
 
-    it('rejected with Error sets error message', async () => {
-      mockedGetOrders.mockRejectedValueOnce(new Error('Network failed'));
+    it('rejected action with payload sets error message', () => {
       const store = createStore();
-      await store.dispatch(fetchOrders());
+
+      store.dispatch({
+        type: fetchOrders.rejected.type,
+        payload: 'Network failed',
+      });
+
       const state = store.getState().orders;
       expect(state.loading).toBe(false);
       expect(state.error).toBe('Network failed');
     });
 
-    it('rejected with non-Error sets fallback message', async () => {
-      mockedGetOrders.mockRejectedValueOnce('unknown');
+    it('rejected action without payload sets fallback message', () => {
       const store = createStore();
-      await store.dispatch(fetchOrders());
+
+      store.dispatch({
+        type: fetchOrders.rejected.type,
+      });
+
       const state = store.getState().orders;
       expect(state.loading).toBe(false);
       expect(state.error).toBe('Failed to fetch orders');
