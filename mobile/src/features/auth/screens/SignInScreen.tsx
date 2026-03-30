@@ -20,7 +20,7 @@ import {
   selectAuthLoading,
   signupUser,
 } from '../authSlice';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {useTranslation} from 'react-i18next';
 
 export const SignInScreen: FC<SignInScreenProps> = () => {

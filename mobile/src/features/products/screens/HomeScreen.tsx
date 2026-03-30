@@ -1,5 +1,5 @@
 import {fetchProducts, selectProducts, selectProductsError, selectProductsLoading} from '../productsSlice';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import type {HomeScreenProps, RootStackParamList} from '../../../types/navigation';
 import {FC, useCallback, useEffect, useMemo, useState} from 'react';
 import {useNavigation} from '@react-navigation/native';

@@ -3,9 +3,9 @@ import {render} from '@testing-library/react-native';
 import {Provider} from 'react-redux';
 import {configureStore} from '@reduxjs/toolkit';
 import MainNavigator from './MainNavigator';
-import {rootReducer} from '../app/rootReducer';
+import {rootReducer} from '../redux/rootReducer';
 import type {MainNavigatorProps} from '../types/navigation';
-import type {RootState} from '../app/store';
+import type {RootState} from '../redux/store';
 
 const createTestStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({

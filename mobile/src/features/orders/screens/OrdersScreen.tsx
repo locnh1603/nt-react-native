@@ -4,7 +4,7 @@ import {useTranslation} from 'react-i18next';
 import Background from '../../../shared/components/Background';
 import Header from '../../../shared/components/Header';
 import ErrorDisplay from '../../../shared/components/ErrorDisplay';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
   clearError,
   fetchOrders,

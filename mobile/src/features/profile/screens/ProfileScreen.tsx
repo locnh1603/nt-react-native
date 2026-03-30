@@ -13,7 +13,7 @@ import Background from '../../../shared/components/Background';
 import {ErrorDisplay} from '../../../shared/components/ErrorDisplay';
 import {Header} from '../../../shared/components/Header';
 import {RadioGroup} from '../../../shared/components/RadioGroup';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
   fetchProfile,
   selectProfileData,

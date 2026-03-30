@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import {useTranslation} from 'react-i18next';
 import {Header} from '../../../shared/components/Header';
-import {useAppDispatch, useAppSelector} from '../../../app/hooks';
+import {useAppDispatch, useAppSelector} from '../../../redux/hooks';
 import {
   clearSelectedProduct,
   fetchProductById,

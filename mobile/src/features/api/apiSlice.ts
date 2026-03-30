@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import {AppThunk} from '../../thunks/app-thunk';
 import {dataService} from '../../services/data/data-service';
-import type {RootState} from '../../app/store';
+import type {RootState} from '../../redux/store';
 
 interface Photo {
 	albumId: number;

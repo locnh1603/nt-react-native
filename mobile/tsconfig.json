@@ -5,7 +5,7 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@app/*": ["src/app/*"],
+      "@app/*": ["src/redux/*"],
       "@features/*": ["src/features/*"],
       "@shared/*": ["src/shared/*"],
       "@navigation/*": ["src/navigation/*"],
