@@ -60,7 +60,7 @@ const HomeScreen: FC<HomeScreenProps> = () => {
   }, [navigation]);
 
   const handleAddToCart = useCallback((_product: Product): void => {
-    // Basic template action, can be replaced with cart logic.
+    console.log('add to cart:', _product);
   }, []);
 
   const handleRetry = useCallback((): void => {

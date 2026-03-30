@@ -2,14 +2,12 @@ import React from 'react';
 import {render, waitFor} from '@testing-library/react-native';
 import App from './App';
 
-// Mock app hooks to control auth state in tests
 let mockIsAuthenticated = false;
 const mockDispatch = jest.fn();
 
 jest.mock('./src/app/hooks', () => ({
   useAppDispatch: () => mockDispatch,
   useAppSelector: (selector: any) => {
-    // Handle different selectors based on the function passed
     if (selector.toString().includes('isAuthenticated')) {
       return mockIsAuthenticated;
     }
@@ -17,7 +15,6 @@ jest.mock('./src/app/hooks', () => ({
   },
 }));
 
-// Mock external dependencies only (not display components)
 jest.mock('./src/services/data/data-service', () => ({
   dataService: {
     login: jest.fn(),
@@ -91,7 +88,6 @@ describe('App', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     mockIsAuthenticated = false;
-    // Make dispatch return a resolved promise so restoreUserSession completes
     mockDispatch.mockReturnValue(Promise.resolve());
   });
 
@@ -109,7 +105,6 @@ describe('App', () => {
     const {getByTestId} = render(<App />);
 
     await waitFor(() => {
-      // SignInScreen should be rendered with real screen content
       expect(getByTestId('sign-in-screen')).toBeTruthy();
     });
   });
@@ -120,8 +115,6 @@ describe('App', () => {
     const {queryByTestId} = render(<App />);
 
     await waitFor(() => {
-      // When authenticated, SignInScreen should NOT be rendered
-      // MainNavigator (with tab labels) should be rendered instead
       expect(queryByTestId('sign-in-screen')).toBeNull();
     });
   });

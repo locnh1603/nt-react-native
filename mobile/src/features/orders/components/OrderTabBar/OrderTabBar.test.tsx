@@ -78,7 +78,6 @@ describe('OrderTabBar', () => {
     const ongoingIndex = getByText('Ongoing').props.children ?? '';
     expect(allIndex).toBe('All Orders');
     expect(ongoingIndex).toBe('Ongoing');
-    // Verify all 4 tabs render — order is implicit in the map
     expect(getByText('All Orders')).toBeTruthy();
     expect(getByText('Ongoing')).toBeTruthy();
     expect(getByText('Completed')).toBeTruthy();

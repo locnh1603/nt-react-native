@@ -7,7 +7,6 @@ import {rootReducer} from '../app/rootReducer';
 import type {MainNavigatorProps} from '../types/navigation';
 import type {RootState} from '../app/store';
 
-// Create a test store with preloaded state to avoid Redux errors
 const createTestStore = (preloadedState?: Partial<RootState>) => {
   return configureStore({
     reducer: rootReducer,
@@ -66,18 +65,14 @@ describe('MainNavigator', () => {
       </Provider>,
     );
 
-    // Verify routes are declared with correct names
     expect(getByText('Home')).toBeTruthy();
     expect(getByText('Orders')).toBeTruthy();
     expect(getByText('Profile')).toBeTruthy();
 
-    // Verify tab labels are translated
     expect(getByText('Label:Home')).toBeTruthy();
     expect(getByText('Label:Orders')).toBeTruthy();
     expect(getByText('Label:Profile')).toBeTruthy();
 
-    // Verify real screens render their content
-    // OrdersScreen renders "Orders" in a card title
     expect(getByText('Orders')).toBeTruthy();
   });
 });
