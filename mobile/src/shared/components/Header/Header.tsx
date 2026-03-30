@@ -3,10 +3,12 @@ import {Pressable, Text, View} from 'react-native';
 import {FontAwesome} from '@react-native-vector-icons/fontawesome';
 import {styles} from './Header.styles';
 
+type FontAwesomeIconName = React.ComponentProps<typeof FontAwesome>['name'];
+
 interface HeaderProps {
   title: string;
   onBack?: () => void;
-  rightIconName?: string;
+  rightIconName?: FontAwesomeIconName;
   onRightPress?: () => void;
 }
 

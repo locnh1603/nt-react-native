@@ -15,6 +15,8 @@ export interface OrderItem {
   productId: number;
   quantity: number;
   price: number;
+  productName?: string;
+  productImage?: string;
 }
 
 export interface Order {
@@ -25,6 +27,8 @@ export interface Order {
   shippingAddress: string;
   paymentMethod: PaymentMethod;
   status: OrderStatus;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface CreateOrderPayload {

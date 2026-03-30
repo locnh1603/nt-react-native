@@ -58,6 +58,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
     event.preventDefault();
   }, []);
 
+  const handleOrderHistoryPress = useCallback((): void => {
+    navigation.navigate('Orders');
+  }, [navigation]);
+
   const handleLanguageChange = useCallback((language: string): void => {
     if (language === 'en' || language === 'vi') {
       void i18n.changeLanguage(language);
@@ -165,7 +169,10 @@ const ProfileScreen: React.FC<ProfileScreenProps> = ({navigation}) => {
             </View>
           </View>
 
-          <TouchableOpacity style={[styles.card, styles.actionCard]}>
+          <TouchableOpacity
+            style={[styles.card, styles.actionCard]}
+            onPress={handleOrderHistoryPress}
+            activeOpacity={0.8}>
             <View style={styles.actionLeft}>
               <View style={styles.actionIconWrap}>
                 <FontAwesome name="history" size={15} color="#303A4A" />

@@ -1,37 +1,57 @@
 import {StyleSheet, TextStyle, ViewStyle} from 'react-native';
 
 type OrdersScreenStyles = {
-  page: ViewStyle;
-  card: ViewStyle;
-  title: TextStyle;
-  description: TextStyle;
+  container: ViewStyle;
+  scrollContent: ViewStyle;
+  loadingContainer: ViewStyle;
+  loadingText: TextStyle;
+  emptyText: TextStyle;
+  emptyContainer: ViewStyle;
+  errorContainer: ViewStyle;
+  cardGap: ViewStyle;
 };
 
 export const styles = StyleSheet.create<OrdersScreenStyles>({
-  page: {
+  container: {
     flex: 1,
     width: '100%',
+    alignSelf: 'stretch',
+    backgroundColor: '#f8fafc',
+  },
+  scrollContent: {
+    paddingHorizontal: 14,
+    paddingTop: 12,
+    paddingBottom: 36,
+    gap: 14,
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 8,
+  },
+  loadingText: {
+    fontSize: 14,
+    color: '#64748b',
+  },
+  emptyContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingHorizontal: 32,
+  },
+  emptyText: {
+    fontSize: 16,
+    color: '#64748b',
+    textAlign: 'center',
+  },
+  errorContainer: {
+    flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: 16,
   },
-  card: {
-    width: '100%',
-    maxWidth: 360,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#E2E8F0',
-    padding: 16,
-    gap: 8,
-  },
-  title: {
-    fontSize: 20,
-    fontWeight: '700',
-    color: '#1F2937',
-  },
-  description: {
-    fontSize: 14,
-    color: '#6B7280',
+  cardGap: {
+    marginBottom: 2,
   },
 });
